@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: BlackChestOverride
+  m_Controller: {fileID: 9100000, guid: 196bf27cbf635e04694fd1bc547931fc, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: afd29d87f6550144ba4e902b88a1b610, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 784b24beee18b794795cbb42cb112e4d, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: caf7e1462d9b7fb42b42e24ff42def8f, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: a35ee5954f812854b935733477c85cc6, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 7b541e10b3567d940b6f2b663cc5d867, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: c82fb524d5d0fbe4aab8def2692e7172, type: 2}

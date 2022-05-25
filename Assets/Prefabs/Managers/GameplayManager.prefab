@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3005807725646768190
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3005807725646768188}
+  - component: {fileID: 3005807725646768191}
+  m_Layer: 0
+  m_Name: GameplayManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3005807725646768188
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3005807725646768190}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.8735359, y: 1.9945801, z: 0.5544467}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3005807725646768191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3005807725646768190}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b07c30a39f3498949b16ed97f7107e27, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentGameTime: 0
+  currentGameStage: 0
+  gameStagesBreakpoints:
+  - 600
+  - 1200
+  - 1800
+  isPaused: 0
+  hasEnded: 0
+  playerObject: {fileID: 4416430153363908937, guid: fd22301448e291d4a8bd7d23d3efa99b, type: 3}
+  enemySpawnerObject: {fileID: 7344049748080069221, guid: c1ceef30e35dbeb4ebabf7058f2df41b, type: 3}
+  timeBetweenWaves: 5
+  timeBetweenChestEnemySpawns: 60
+  canSpawnMiniBoss: 0
+  minTimeBetweenMiniBosses: 120
+  timeToNextMiniBoss: 120
+  MiniBossesCount: 0
+  bossSpawnTimestamps: 58020000b0040000cc060000
+  BossesCount: 0

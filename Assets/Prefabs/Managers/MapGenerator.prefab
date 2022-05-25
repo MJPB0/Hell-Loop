@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2348000150104066239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2348000150104066236}
+  - component: {fileID: 2348000150104066237}
+  m_Layer: 0
+  m_Name: MapGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2348000150104066236
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2348000150104066239}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2348000150104066237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2348000150104066239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08b4e3b81d7a2f84fb14f69489f5c38e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapParent: {fileID: 0}
+  chunkSize: 64
+  grounds:
+  - {fileID: 429813261735926865, guid: 119d4e801dd94ea459a8435090be1c61, type: 3}
+  - {fileID: 6841254979777177471, guid: 51ee88790b22ddc48b978d7a9cb3506f, type: 3}
+  rockEnvironments:
+  - {fileID: 3633842762605017678, guid: f76527e239cce7648a8f2fefb7ece916, type: 3}
+  - {fileID: 8749132030941949445, guid: 8f03262cf364a7b49b9a475f355ae680, type: 3}
+  fireplaceEnvironments:
+  - {fileID: 3008292658646266624, guid: 9abbf3d1c8daee345ae4b1d2387d3a85, type: 3}
+  - {fileID: 4848450703965310722, guid: 8054ed6ca2f37a640b0e3785024a141c, type: 3}
+  - {fileID: 1213554289897436191, guid: 90e8dfaef55a4734bb8a1ff5a4cab1bc, type: 3}
+  flowerEnvironments:
+  - {fileID: 5419168769842145084, guid: 60619b8ceb3612c45846f2f1d7890060, type: 3}
+  bonesEnvironments:
+  - {fileID: 4159557376461795150, guid: ff50ff238ab64404096cc0ef911e2873, type: 3}
+  grassEnvironments:
+  - {fileID: 3340618827699041233, guid: 2fe98dc3ce147014fa3dab0d38532329, type: 3}
+  - {fileID: 6914735487156044548, guid: 3ed8fd725bde4f5479a7485611702245, type: 3}
+  tombstoneEnvironments:
+  - {fileID: 5698687176899120438, guid: d8a848f3c20c13c41b76812dcbb09a2c, type: 3}
+  currentChunk: {fileID: 0}
+  chunks: []
