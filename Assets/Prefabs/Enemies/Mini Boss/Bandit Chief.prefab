@@ -61,7 +61,7 @@ MonoBehaviour:
   canBeKnockedBack: 0
   playerInRange: 0
   damage: 7
-  attackRange: 1
+  attackRange: 2
   attackSpeed: 1
   isFrozen: 0
   canAttack: 0

@@ -52,18 +52,29 @@ MonoBehaviour:
   rockEnvironments:
   - {fileID: 3633842762605017678, guid: f76527e239cce7648a8f2fefb7ece916, type: 3}
   - {fileID: 8749132030941949445, guid: 8f03262cf364a7b49b9a475f355ae680, type: 3}
+  - {fileID: 630508622936403390, guid: a9bb47f721c67384f8c2b7863ffcf87c, type: 3}
+  - {fileID: 7048563033627554723, guid: 31d6de69dea670c4da59dd5560e310b4, type: 3}
   fireplaceEnvironments:
   - {fileID: 3008292658646266624, guid: 9abbf3d1c8daee345ae4b1d2387d3a85, type: 3}
   - {fileID: 4848450703965310722, guid: 8054ed6ca2f37a640b0e3785024a141c, type: 3}
   - {fileID: 1213554289897436191, guid: 90e8dfaef55a4734bb8a1ff5a4cab1bc, type: 3}
   flowerEnvironments:
   - {fileID: 5419168769842145084, guid: 60619b8ceb3612c45846f2f1d7890060, type: 3}
+  - {fileID: 4052739864633553963, guid: 8508db88e8f40be41b29cbe54f278661, type: 3}
+  - {fileID: 3662757422563750835, guid: 354893cbe8cb91a49a6a79ff69f2652e, type: 3}
   bonesEnvironments:
   - {fileID: 4159557376461795150, guid: ff50ff238ab64404096cc0ef911e2873, type: 3}
+  - {fileID: 6210889434775291900, guid: 4aafcffc66a1d7248922123bedd48fc0, type: 3}
+  - {fileID: 1930894977234085991, guid: e707b69ae0597d04ba5813f4d6589eb3, type: 3}
   grassEnvironments:
   - {fileID: 3340618827699041233, guid: 2fe98dc3ce147014fa3dab0d38532329, type: 3}
   - {fileID: 6914735487156044548, guid: 3ed8fd725bde4f5479a7485611702245, type: 3}
+  - {fileID: 5791400381138501071, guid: 671a709ad06b5e0419f9320d210739b9, type: 3}
+  - {fileID: 6941206556949934521, guid: 8b5b1fd545179ae489a34b7d1729b678, type: 3}
   tombstoneEnvironments:
   - {fileID: 5698687176899120438, guid: d8a848f3c20c13c41b76812dcbb09a2c, type: 3}
+  - {fileID: 1419261191417910992, guid: 2b3ec60c2c3898840ad3f72dd48d420c, type: 3}
+  - {fileID: 8909999196996260190, guid: 84dd5c5b4e1ea4247977671712d96c93, type: 3}
+  - {fileID: 5833545278895605223, guid: 512f7c339c806d2418ae4b5b3e2c7ee9, type: 3}
   currentChunk: {fileID: 0}
   chunks: []

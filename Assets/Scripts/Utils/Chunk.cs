@@ -16,6 +16,8 @@ public class Chunk : MonoBehaviour
     public bool HasTopLeftChunk = false;
     public bool HasTopRightChunk = false;
 
+    public float EnemyMultiplier = 1f;
+
     public bool IsSurrounded() => HasLeftChunk && HasRightChunk && HasTopChunk && HasBottomChunk &&
             HasBottomRightChunk && HasBottomLeftChunk && HasTopLeftChunk && HasTopRightChunk;
 }

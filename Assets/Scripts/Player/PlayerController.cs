@@ -64,7 +64,7 @@ public class PlayerController : MonoBehaviour
         if (player.TimeToNextDash > 0f) player.TimeToNextDash -= Time.deltaTime;
         else if (!player.CanDash)
         {
-            Debug.Log("Dash ready!");
+            //Debug.Log("Dash ready!");
             player.CanDash = true;
             player.TimeToNextDash = 0f;
         }
@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
         player.OnPlayerDash?.Invoke();
 
         StartCoroutine(PerformDash());
-        Debug.Log("Dash performed!");
+        //Debug.Log("Dash performed!");
     }
 
     private void FlipBody(bool facingRight)

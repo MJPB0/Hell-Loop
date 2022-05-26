@@ -24,14 +24,14 @@ public class EnemySpawner : MonoBehaviour
     [Space]
     [SerializeField] private bool canSpawnWave;
     [SerializeField] private int enemiesPerWave;
-    [SerializeField] private float enemiesPerWaveMultiplier;
+    public float EnemiesPerWaveMultiplier;
 
     [Space]
     [SerializeField] private bool canSpawnChestEnemy;
 
     private Camera mainCamera;
 
-    public int EnemiesInWave { get { return Mathf.RoundToInt(enemiesPerWave * enemiesPerWaveMultiplier);} }
+    public int EnemiesInWave { get { return Mathf.RoundToInt(enemiesPerWave * EnemiesPerWaveMultiplier);} }
     public bool CanSpawnWave { get { return canSpawnWave;} }
     public bool CanSpawnChestEnemy { get { return canSpawnChestEnemy; } }
 
