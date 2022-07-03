@@ -1,2 +1,2 @@
 # Hell-Loop
- 2D roguelike game still in development.
+ 2D roguelike game currently in development.
