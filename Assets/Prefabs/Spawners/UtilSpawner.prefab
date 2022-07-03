@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5763852966789727269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6766668441749613462}
+  - component: {fileID: 8565622661824081416}
+  m_Layer: 0
+  m_Name: UtilSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6766668441749613462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5763852966789727269}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8565622661824081416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5763852966789727269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce0d21b724b6ec946be233baf87fb7f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnNodes: {fileID: 0}
+  interactablesParent: {fileID: 0}
+  pickablesParent: {fileID: 0}
+  chests:
+  - {fileID: 2321498086740699545, guid: ea88cc08bff027b429c31d365a48b10c, type: 3}
+  - {fileID: 1132399639603480551, guid: 77117fbfb1e8fb442a2443facbc62e78, type: 3}
+  - {fileID: 7643490314235115168, guid: 54c274f5bab2e8e4eb9c6d77102eb37a, type: 3}
+  chanceToSpawnChest: 0.5
+  potions:
+  - {fileID: 25299036898733790, guid: 7a16c8e9d1d7955458e5631a0764bd26, type: 3}
+  - {fileID: 4023576450985458791, guid: 62518d271ca7c0d4bb973ad36dc942a5, type: 3}
+  - {fileID: 8956393536170417300, guid: 17c3b20ffc2987242825a9aecb37abf3, type: 3}
+  chanceToSpawnPotion: 0.75
+  pouches:
+  - {fileID: 7321261248019800311, guid: 7715e7b7ad29e8c47b9fb3fa525a75d0, type: 3}
+  - {fileID: 6092619233561178068, guid: 4295b934ac767604cb2c7cc2306717e8, type: 3}
+  - {fileID: 5731603143984781850, guid: c9cef92d3fede2a47b29c920b750c984, type: 3}
+  chanceToSpawnPouch: 0.6
+  canSpawnUtil: 0

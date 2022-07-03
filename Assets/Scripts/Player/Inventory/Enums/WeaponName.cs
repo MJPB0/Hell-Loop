@@ -7,7 +7,6 @@ public enum WeaponName
     // Tier 1
     KNIFE,
     SWORD,
-    TOMAHAWK,
     AXE,
     ICE_WAND,
     FIRE_WAND,
@@ -20,7 +19,6 @@ public enum WeaponName
     // Tier 2
     BLOODY_KNIFE,
     HOLY_SWORD,
-    ASSASINS_TOMAHAWK,
     BATTLEAXE,
     TIME_WAND,
     LASER_WAND,

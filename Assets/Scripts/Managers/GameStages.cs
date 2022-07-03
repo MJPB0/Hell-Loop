@@ -4,7 +4,7 @@ using UnityEngine;
 
 public enum GameStages
 {
-    EARLY,
-    MID,
-    LATE,
+    EARLY = 0,
+    MID = 1,
+    LATE = 2,
 }

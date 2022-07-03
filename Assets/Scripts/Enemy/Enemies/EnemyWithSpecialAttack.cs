@@ -29,7 +29,7 @@ public class EnemyWithSpecialAttack : Enemy
     private void CanUseSpecialAttack()
     {
         if (timeToNextSpecialAttack > 0)
-            timeToNextSpecialAttack -= Time.deltaTime * attackSpeed;
+            timeToNextSpecialAttack -= Time.deltaTime * attackTimeReduction;
         else
         {
             timeToNextSpecialAttack = 0;
@@ -54,7 +54,7 @@ public class EnemyWithSpecialAttack : Enemy
         StartCoroutine(WaitAndEnableMovement(attack.length));
 
         canAttack = false;
-        timeToNextAttack = timeBetweenAttacks;
+        timeToNextAttack = timeBetweenAttacks - attackTimeReduction - attackSpeedIncreasePerLevel * level;
     }
 
     private void SpecialAttack()
@@ -66,18 +66,19 @@ public class EnemyWithSpecialAttack : Enemy
         timeToNextAttack = timeBetweenAttacks;
 
         canUseSpecialAttack = false;
-        timeToNextSpecialAttack = timeBetweenSpecialAttacks;
+        timeToNextSpecialAttack = timeBetweenSpecialAttacks - attackTimeReduction - attackSpeedIncreasePerLevel * level;
     }
 
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, WeaponName weaponName)
     {
         if (!canTakeDamage) return;
 
         health -= damage;
+        GameplayManager.Instance.CountDamageDealt(damage, weaponName);
+
         anim.SetTrigger(ENEMY_GET_HIT_TRIGGER);
         StartCoroutine(WaitAndEnableMovement(getHit.length));
         OnEnemyTakeDamage?.Invoke();
-        //Debug.Log($"{gameObject.name} took {damage} damage");
 
         if (health <= 0)
         {
@@ -85,6 +86,8 @@ public class EnemyWithSpecialAttack : Enemy
             canTakeDamage = false;
             canMove = false;
             isAlive = false;
+
+            GameplayManager.Instance.AddEnemyKilled();
 
             anim.SetTrigger(ENEMY_DEATH_TRIGGER);
             OnEnemyDeath?.Invoke();
@@ -96,8 +99,8 @@ public class EnemyWithSpecialAttack : Enemy
         if (!playerInRange) return;
 
         if (isSpecial)
-            player.TakeDamage(damage * specialAttackDamageMultiplier);
+            player.TakeDamage(Damage * specialAttackDamageMultiplier );
         else
-            player.TakeDamage(damage);
+            player.TakeDamage(Damage);
     }
 }

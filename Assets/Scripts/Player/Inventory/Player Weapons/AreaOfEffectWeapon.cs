@@ -10,31 +10,32 @@ public class AreaOfEffectWeapon : PlayerWeapon
 
     [Space]
     [SerializeField] private float damageInterval;
+    [SerializeField] private float damageIntervalDecrease;
 
     public override void SetCurrentlyUsed()
     {
-        weaponWasUsed += Spawn;
+        WeaponIsUsed += Spawn;
     }
 
     public override void SetNotCurrentlyUsed()
     {
-        weaponWasUsed -= Spawn;
+        WeaponIsUsed -= Spawn;
     }
 
     public override void Use()
     {
         canAttack = false;
-        timeToNextAttack = timeBetweenAttacks;
+        timeToNextAttack = timeBetweenAttacks - AttackSpeed;
 
-        weaponWasUsed?.Invoke();
+        WeaponIsUsed?.Invoke();
     }
 
     public void UseEffects(AreaOfEffect aoe)
     {
         foreach (Enemy enemy in enemiesInRange)
         {
-            primaryEffect.Use(currentLevel, player, enemy);
-            secondaryEffect.Use(currentLevel, player, enemy);
+            primaryEffect.Use(player, enemy, weaponName);
+            secondaryEffect.Use(player, enemy, weaponName);
             aoe.EffectsApplied();
 
             if (onHitEffect != null)
@@ -60,12 +61,34 @@ public class AreaOfEffectWeapon : PlayerWeapon
         float startTime = Time.time;
         while (Time.time < startTime + primaryEffect.Duration)
         {
-            yield return new WaitForSeconds(damageInterval);
+            yield return new WaitForSeconds(damageInterval - damageIntervalDecrease);
 
             if (aoe.CanApplyEffects)
                 UseEffects(aoe);
         }
 
         aoe.Despawn();
+    }
+
+    protected override void ApplyUpgrades()
+    {
+        WeaponLevelUpgradeSO upgrade = levelUpgrades[currentLevel - 2];
+        switch (upgrade.StatType)
+        {
+            case WeaponStatType.ATTACK_RANGE:
+                additionalAttackRange += upgrade.Value;
+                break;
+            case WeaponStatType.ATTACK_SPEED:
+                additionalAttackSpeed += upgrade.Value;
+                break;
+            case WeaponStatType.DAMAGE_INTERVAL:
+                damageIntervalDecrease += upgrade.Value;
+                break;
+        }
+
+        if (upgrade.PrimaryEffectUpgrade != null)
+            primaryEffect = upgrade.PrimaryEffectUpgrade;
+        if (upgrade.SecondaryEffectUpgrade != null)
+            secondaryEffect = upgrade.SecondaryEffectUpgrade;
     }
 }

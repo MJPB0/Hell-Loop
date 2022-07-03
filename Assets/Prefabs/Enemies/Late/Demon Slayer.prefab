@@ -47,6 +47,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 076e29202008522428348a059f1dc37d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: 1
+  levelupInterval: 60
+  movementIncreasePerLevel: 0.2
+  spawnChanceIncreasePerLevel: 0.2
+  healthIncreasePerLevel: 5
+  damageIncreasePerLevel: 0.2
+  attackRangeIncreasePerLevel: 0.1
+  attackSpeedIncreasePerLevel: 0.05
+  timeBetweenAttacksDecreasePerLevel: 0.01
+  dropRateIncreasePerLevel: 0.02
+  dropAmountIncreasePerLevel: 0.2
   health: 125
   isAlive: 1
   canTakeDamage: 1
@@ -62,7 +73,7 @@ MonoBehaviour:
   playerInRange: 0
   damage: 5
   attackRange: 2
-  attackSpeed: 1
+  attackSpeed: 0
   isFrozen: 0
   canAttack: 0
   timeBetweenAttacks: 3
@@ -249,3 +260,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecb9a3333f6f5c140a27841c88313859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attacker: {fileID: 0}

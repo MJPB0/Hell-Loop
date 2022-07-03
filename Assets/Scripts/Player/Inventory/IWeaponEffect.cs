@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IWeaponEffect
 {
-    public abstract void Use(int level, Player player, Enemy enemy);
+    public abstract void Use(Player player, Enemy enemy, WeaponName weaponName);
 }

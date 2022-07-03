@@ -17,7 +17,7 @@ public class GoldPouch : InteractableObject
 
     void Start()
     {
-        gameObject.transform.localScale = new Vector3(.8f, .8f, .8f);
+        gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
         spriteRenderer.sprite = pouchObject.sprite;
 
         player = FindObjectOfType<Player>();
@@ -25,7 +25,6 @@ public class GoldPouch : InteractableObject
 
     public override void Interact()
     {
-        //Debug.Log($"{gameObject.name} was picked up");
         player.AddGold(pouchObject.Value);
         Destroy(gameObject);
     }

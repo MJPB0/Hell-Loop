@@ -48,7 +48,6 @@ MonoBehaviour:
   chunkSize: 64
   grounds:
   - {fileID: 429813261735926865, guid: 119d4e801dd94ea459a8435090be1c61, type: 3}
-  - {fileID: 6841254979777177471, guid: 51ee88790b22ddc48b978d7a9cb3506f, type: 3}
   rockEnvironments:
   - {fileID: 3633842762605017678, guid: f76527e239cce7648a8f2fefb7ece916, type: 3}
   - {fileID: 8749132030941949445, guid: 8f03262cf364a7b49b9a475f355ae680, type: 3}

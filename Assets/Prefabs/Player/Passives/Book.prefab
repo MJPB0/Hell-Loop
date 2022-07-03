@@ -44,8 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697deb9d40acb574cb94b016778c0b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passiveName: 12
+  passiveName: 11
+  passiveDescription: increase experience gain by
   multiplierType: 12
-  currentLevel: 1
+  baseValue: 0.5
+  additionalValue: 0
+  currentLevel: 0
   maxLevel: 5
-  inceasePerLevel: 0.5
+  levelUpgrades:
+  - 0.1
+  - 0.15
+  - 0.25
+  - 1
+  sprite: {fileID: 21300000, guid: 9defd8621f911cf41920552e81887109, type: 3}

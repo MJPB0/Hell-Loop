@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class ObjectInteraction : MonoBehaviour
 {
@@ -59,10 +60,7 @@ public class ObjectInteraction : MonoBehaviour
         if (!closestObject) 
             return;
         if (!closestObject.IsInteractable)
-        {
-            Debug.Log($"Can't interact with this object : {closestObject.name}!");
             return;
-        }
 
         closestObject.Interact();
     }
@@ -90,5 +88,10 @@ public class ObjectInteraction : MonoBehaviour
             if (d2 < d1) closest = obj;
         }
         closestObject = closest;
+    }
+
+    public void UpdatePickupRange(float value)
+    {
+        pickupRange.radius = value;
     }
 }

@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -132,21 +132,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsInteractable: 0
   AutomaticInteraction: 0
-  weaponName: 17
-  passiveNeededToEvolve: 6
+  weaponName: 15
+  passiveNeededToEvolve: 5
   isEvolved: 1
   evolvedWeapon: {fileID: 0}
   currentLevel: 1
-  maxLevel: 3
+  maxLevel: 4
+  levelUpgrades:
+  - {fileID: 11400000, guid: 5d9a438ed3c51dc45a47782fa01e0860, type: 2}
+  - {fileID: 11400000, guid: f30ecabe01d21954cb8777d982a794ca, type: 2}
+  - {fileID: 11400000, guid: a78c142eaf55dd0479aeb8bf917c8e9d, type: 2}
   canAttack: 1
   timeToNextAttack: 0
-  timeBetweenAttacks: 3
+  timeBetweenAttacks: 5
   attackSpeed: 1
-  attackRange: 20
-  criticalChance: 0.6
+  additionalAttackSpeed: 0
+  attackRange: 10
+  additionalAttackRange: 0
   primaryEffect: {fileID: 11400000, guid: 05a78e34800db6f43be7fe264e69ddc4, type: 2}
-  secondaryEffect: {fileID: 11400000, guid: 14b80ffb094616542bc4f193fdc9b9a7, type: 2}
-  sprite: {fileID: 0}
+  secondaryEffect: {fileID: 11400000, guid: 8701f70cfff1a2445aae57281d37f5a7, type: 2}
+  sprite: {fileID: 21300000, guid: c28f4a33ac77c6f4ebd08f1bc1a5c520, type: 3}
   enemiesInRange: []
   pickupCollider: {fileID: 0}
   rangeCollider: {fileID: 0}
@@ -154,9 +159,10 @@ MonoBehaviour:
   onHitEffect: {fileID: 2415028395537355280, guid: cf42e36761c77b14ea9135d8eaa9e6a3, type: 3}
   onHitEffectAnimation: {fileID: 7400000, guid: f2cee4f44b097a5419e866844d7914f4, type: 2}
   projectileSpeed: 15
+  additionalProjectileSpeed: 0
   projectile: {fileID: 4544893112406334942, guid: b7c0d7c6c6aead04d983972f69836aae, type: 3}
-  hasEnemyCap: 0
-  maxEnemiesHit: 1
+  hasEnemyCap: 1
+  maxEnemiesHit: 4
 --- !u!58 &7066986452634451318
 CircleCollider2D:
   m_ObjectHideFlags: 0

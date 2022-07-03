@@ -54,11 +54,39 @@ MonoBehaviour:
   hasEnded: 0
   playerObject: {fileID: 4416430153363908937, guid: fd22301448e291d4a8bd7d23d3efa99b, type: 3}
   enemySpawnerObject: {fileID: 7344049748080069221, guid: c1ceef30e35dbeb4ebabf7058f2df41b, type: 3}
-  timeBetweenWaves: 5
+  timeBetweenWaves: 10
   timeBetweenChestEnemySpawns: 60
+  percentagePerIncrease: 1.5
+  timeBetweenEnemiesAmountIncrease: 30
+  timeToEnemiesAmountIncrease: 30
   canSpawnMiniBoss: 0
   minTimeBetweenMiniBosses: 120
   timeToNextMiniBoss: 120
   MiniBossesCount: 0
   bossSpawnTimestamps: 58020000b0040000cc060000
   BossesCount: 0
+  timeToUtilSpawn: 15
+  timeBetweenUtilSpawns: 30
+  KnifeDamage: 0
+  EvolvedKnifeDamage: 0
+  SwordDamage: 0
+  EvolvedSwordDamage: 0
+  TomahawkDamage: 0
+  EvolvedTomahawkDamage: 0
+  AxeDamage: 0
+  EvolvedAxeDamage: 0
+  IceWandDamage: 0
+  EvolvedIceWandDamage: 0
+  FireWandDamage: 0
+  EvolvedFireWandDamage: 0
+  EarthWandDamage: 0
+  EvolvedEarthWandDamage: 0
+  WindWandDamage: 0
+  EvolvedWindWandDamage: 0
+  OverallDamage: 0
+  DamageTaken: 0
+  HealingDone: 0
+  EnemiesKilled: 0
+  ExperienceGained: 0
+  LevelReached: 0
+  TimeAlive: 0

@@ -14,81 +14,94 @@ public class WeaponEffect : ScriptableObject, IWeaponEffect
     public float Duration { get { return duration; } }
     public EffectType EffectType { get { return effectType; } }
 
-    public void Use(int level, Player player, Enemy enemy)
+    public void Use(Player player, Enemy enemy, WeaponName weaponName)
     {
         switch (effectType)
         {
             case EffectType.DAMAGE:
-                DealDamage(enemy, player, level);
+                DealDamage(enemy, player, weaponName);
                 break;
             case EffectType.DOT:
-                ApplyDamageOverTime(enemy, player, level);
+                ApplyDamageOverTime(enemy, player, weaponName);
                 break;
             case EffectType.SLOW:
-                ApplySlow(enemy, player, level);
+                ApplySlow(enemy, player);
                 break;
             case EffectType.KNOCKBACK:
-                KnockBack(enemy, player, level);
+                KnockBack(enemy, player);
                 break;
             case EffectType.PARRY:
-                Parry(player, level);
+                Parry(player);
                 break;
             case EffectType.LIFE_STEAL:
-                StealLife(enemy, player, level);
+                StealLife(enemy, player, weaponName);
                 break;
             case EffectType.HOLY_SLASH:
-                HolyStrike(enemy, player, level);
+                HolyStrike(enemy, player);
                 break;
         }
     }
 
-    private void DealDamage(Enemy target, Player player, int level)
+    private void DealDamage(Enemy target, Player player, WeaponName weaponName)
     {
-        // TODO level dependence
-        target.TakeDamage(Mathf.RoundToInt(power * player.EffectPowerMultiplier));
+        bool isCritical = Random.Range(0f, 1f) <= player.CriticalChance;
+        bool willDoubleAttack = Random.Range(0f, 1f) <= player.DoubleAttackChance;
+        int damage = Mathf.RoundToInt(power * player.EffectPowerMultiplier);
+        damage = isCritical ? Mathf.RoundToInt(damage * player.CriticalDamageMultiplier) : damage;
+
+        target.TakeDamage(damage, weaponName);
+
+        // TODO refactor
+        if (player.CanDoubleAttack && willDoubleAttack)
+        {
+            target.TakeDamage(damage, weaponName);
+            player.GetComponentInChildren<PlayerEffects>().PlayerDoubleAttack(target.transform.position);
+        }
+
+        SoundManager.PlayEnemyDamageSound();
+
+        Vector3 positionVector;
+        positionVector = new Vector3(target.transform.position.x + 9.8f, target.transform.position.y - 1.5f, target.transform.position.z);
+        DamagePopup.Create(positionVector, damage.ToString(), isCritical ? DamagePopupOwner.ENEMY_CRITICAL_HIT : DamagePopupOwner.ENEMY_HIT);
     }
 
-    private void ApplyDamageOverTime(Enemy target, Player player, int level)
+    private void ApplyDamageOverTime(Enemy target, Player player, WeaponName weaponName)
     {
-        // TODO level dependence
         int pow = Mathf.RoundToInt(power * player.EffectPowerMultiplier);
         int dur = Mathf.RoundToInt(duration * player.EffectDurationMultiplier);
-        target.ApplyDamageOverTime(pow, dur, timeBetweenAttacks);
+        target.ApplyDamageOverTime(pow, dur, timeBetweenAttacks, weaponName);
     }
 
-    private void ApplySlow(Enemy target, Player player, int level)
+    private void ApplySlow(Enemy target, Player player)
     {
-        // TODO level dependence
         int pow = Mathf.RoundToInt(power * player.EffectPowerMultiplier);
         int dur = Mathf.RoundToInt(duration * player.EffectDurationMultiplier);
         target.ApplySlow(pow, dur);
     }
 
-    private void KnockBack(Enemy target, Player player, int level)
+    private void KnockBack(Enemy target, Player player)
     {
-        // TODO level dependence
         target.KnockBack(Mathf.RoundToInt(power * player.EffectPowerMultiplier));
     }
 
-    private void Parry(Player player, int level)
+    private void Parry(Player player)
     {
-        // TODO level dependence
         int pow = Mathf.RoundToInt(power * player.EffectPowerMultiplier);
         int dur = Mathf.RoundToInt(duration * player.EffectDurationMultiplier);
         player.AddArmor(pow, dur);
     }
 
-    private void StealLife(Enemy target, Player player, int level)
+    private void StealLife(Enemy target, Player player, WeaponName weaponName)
     {
-        // TODO level dependence
         int pow = Mathf.RoundToInt(power * player.EffectPowerMultiplier);
-        target.TakeDamage(pow);
+        target.TakeDamage(pow, weaponName);
         player.Heal(pow);
     }
 
-    private void HolyStrike(Enemy target, Player player, int level)
+    private void HolyStrike(Enemy target, Player player)
     {
-        // TODO level dependence
-        target.TakeDamage(Mathf.RoundToInt(power * player.EffectPowerMultiplier) + player.Armor);
+        // TODO refactor
+        player.GetComponentInChildren<PlayerEffects>().PlayerHolyAttack(target.transform.position);
+        target.TakeDamage(Mathf.RoundToInt(power * player.EffectPowerMultiplier) + player.Armor, WeaponName.HOLY_SWORD);
     }
 }

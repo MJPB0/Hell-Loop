@@ -50,24 +50,35 @@ MonoBehaviour:
   IsInteractable: 1
   AutomaticInteraction: 0
   weaponName: 1
-  passiveNeededToEvolve: 0
+  passiveNeededToEvolve: 1
   isEvolved: 0
   evolvedWeapon: {fileID: 6757083444759938826, guid: ad67f50760ec29349ab03ba622b53aaa, type: 3}
   currentLevel: 1
   maxLevel: 5
+  levelUpgrades:
+  - {fileID: 11400000, guid: ffbb50dd59aa8214a8ab941d5a611de5, type: 2}
+  - {fileID: 11400000, guid: fe2d7266edc42124aa8d46990657967c, type: 2}
+  - {fileID: 11400000, guid: 9ccaa571916da32489713d44d36eb702, type: 2}
+  - {fileID: 11400000, guid: 22d2e46dd2ef730428ee7909f60dfd79, type: 2}
   canAttack: 1
   timeToNextAttack: 0
   timeBetweenAttacks: 2
   attackSpeed: 1
-  attackRange: 1
-  criticalChance: 0.5
+  additionalAttackSpeed: 0
+  attackRange: 2
+  additionalAttackRange: 0
   primaryEffect: {fileID: 11400000, guid: 6f93b6b7a80fd7e49995dc13fca5cf57, type: 2}
   secondaryEffect: {fileID: 11400000, guid: 9d9ada470c84e404ea2c950d0a0a660f, type: 2}
-  sprite: {fileID: 21300000, guid: 95052c6b62fb3de4695beaa99f842ac2, type: 3}
+  sprite: {fileID: -50976141, guid: 72be58ed8ea3738408c013e7db399f55, type: 3}
   enemiesInRange: []
   pickupCollider: {fileID: 4063123022258946387}
   rangeCollider: {fileID: 4063123022258946386}
   projectilesParent: {fileID: 0}
+  onHitEffect: {fileID: 0}
+  onHitEffectAnimation: {fileID: 0}
+  weaponEffect: {fileID: 3789647924391219157, guid: a09fa4256777b1b44a513a8ee37040f2, type: 3}
+  weaponEffectClip: {fileID: 7400000, guid: 95129f5d233d09249ae56a3eb275ac4b, type: 2}
+  effectPositionOffset: {x: 0.5, y: 0, z: 0}
 --- !u!61 &4063123022258946386
 BoxCollider2D:
   m_ObjectHideFlags: 0

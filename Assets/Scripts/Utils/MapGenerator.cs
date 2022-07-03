@@ -46,7 +46,9 @@ public class MapGenerator : MonoBehaviour
         enemySpawner = FindObjectOfType<EnemySpawner>();
 
         chunks = new List<GameObject>();
-        chunks.Add(GameObject.FindGameObjectWithTag(CHUNK_TAG));
+        GameObject chunk = GameObject.FindGameObjectWithTag(CHUNK_TAG);
+        chunks.Add(chunk);
+        currentChunk = chunk;
     }
 
     private void Update()
@@ -65,16 +67,7 @@ public class MapGenerator : MonoBehaviour
         if (!isAtBottomEdge && !isAtTopEdge && !isAtLeftEdge && !isAtRightEdge) return;
 
         Chunk chunk = currentChunk.GetComponent<Chunk>();
-
-        if (isAtLeftEdge && isAtTopEdge && !chunk.HasTopLeftChunk)
-            SpawnChunk(1, -1);
-        else if (isAtLeftEdge && isAtBottomEdge && !chunk.HasBottomLeftChunk)
-            SpawnChunk(-1, -1);
-
-        if (isAtRightEdge && isAtTopEdge && !chunk.HasTopRightChunk)
-            SpawnChunk(1, 1);
-        else if (isAtRightEdge && isAtBottomEdge && !chunk.HasBottomRightChunk)
-            SpawnChunk(-1, 1);
+        if (chunk.IsSurrounded) return;
 
         if (isAtTopEdge && !chunk.HasTopChunk)
             SpawnChunk(1, 0);
@@ -85,6 +78,16 @@ public class MapGenerator : MonoBehaviour
             SpawnChunk(0, 1);
         if (isAtLeftEdge && !chunk.HasLeftChunk)
             SpawnChunk(0, -1);
+
+        if (isAtLeftEdge && isAtTopEdge && !chunk.HasTopLeftChunk)
+            SpawnChunk(1, -1);
+        else if (isAtLeftEdge && isAtBottomEdge && !chunk.HasBottomLeftChunk)
+            SpawnChunk(-1, -1);
+
+        if (isAtRightEdge && isAtTopEdge && !chunk.HasTopRightChunk)
+            SpawnChunk(1, 1);
+        else if (isAtRightEdge && isAtBottomEdge && !chunk.HasBottomRightChunk)
+            SpawnChunk(-1, 1);
     }
 
     private void DetectAdjacentChunks(Chunk newChunk)
@@ -94,7 +97,7 @@ public class MapGenerator : MonoBehaviour
         foreach (GameObject mapChunk in chunks)
         {
             Chunk chunk = mapChunk.GetComponent<Chunk>();
-            if (chunk.IsSurrounded()) return;
+            if (chunk.IsSurrounded) continue;
 
             Vector3 chunkPos = chunk.transform.position;
             if (chunkPos.x - chunkSize == newChunkPos.x && chunkPos.y == newChunkPos.y)
@@ -150,13 +153,11 @@ public class MapGenerator : MonoBehaviour
     public void ChangeCurrentChunk(string chunkName)
     {
         currentChunk = chunks.Find(c => c.name == chunkName);
-        enemySpawner.EnemiesPerWaveMultiplier = currentChunk.GetComponent<Chunk>().EnemyMultiplier;
+        enemySpawner.ChunkEnemiesAmountMultiplier = currentChunk.GetComponent<Chunk>().EnemyMultiplier;
     }
 
     private void SpawnChunk(int vertical, int horizontal)
     {
-        if (vertical > 1 || vertical < -1 || horizontal > 1 || horizontal < -1) return;
-
         GameObject chunk = new();
 
         chunk.name = $"Chunk{chunks.Count}";
@@ -183,27 +184,27 @@ public class MapGenerator : MonoBehaviour
         if (Random.Range(0,2) == 1) environments.Add(rockEnvironments[Random.Range(0, rockEnvironments.Length)]);
         if (Random.Range(0,2) == 1)
         {
-            newChunk.EnemyMultiplier -= .5f;
+            newChunk.EnemyMultiplier -= .2f;
             environments.Add(fireplaceEnvironments[Random.Range(0, fireplaceEnvironments.Length)]);
         }
         if (Random.Range(0,2) == 1)
         {
-            newChunk.EnemyMultiplier -= .25f;
+            newChunk.EnemyMultiplier -= .1f;
             environments.Add(flowerEnvironments[Random.Range(0, flowerEnvironments.Length)]);
         }
         if (Random.Range(0,2) == 1)
         {
-            newChunk.EnemyMultiplier += .25f;
+            newChunk.EnemyMultiplier += .15f;
             environments.Add(bonesEnvironments[Random.Range(0, bonesEnvironments.Length)]);
         }
         if (Random.Range(0,2) == 1)
         {
-            newChunk.EnemyMultiplier -= .25f;
+            newChunk.EnemyMultiplier -= .1f;
             environments.Add(grassEnvironments[Random.Range(0, grassEnvironments.Length)]);
         }
         if (Random.Range(0,2) == 1)
         {
-            newChunk.EnemyMultiplier += .5f;
+            newChunk.EnemyMultiplier += .25f;
             environments.Add(tombstoneEnvironments[Random.Range(0, tombstoneEnvironments.Length)]);
         }
 

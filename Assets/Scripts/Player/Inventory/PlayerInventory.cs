@@ -12,6 +12,9 @@ public class PlayerInventory : MonoBehaviour
     public UnityAction OnWeaponPickUp;
     public UnityAction OnWeaponLevelUp;
     public UnityAction OnWeaponReplace;
+    public UnityAction UiOnWeaponReplace;
+    public UnityAction OnWeaponEvolve;
+    public UnityAction OnCurrentWeaponChange;
 
     private const string PLAYER_WEAPONS_PARENT_TAG = "Player Weapons Parent";
     private const string PLAYER_PASSIVES_PARENT_TAG = "Player Passives Parent";
@@ -37,6 +40,8 @@ public class PlayerInventory : MonoBehaviour
     [SerializeField] private Transform playerPassivesParent;
 
     public PlayerWeapon CurrentWeapon { get { return currentWeapon; } }
+    public List<PlayerWeapon> PlayerWeaponsList { get { return weapons; } }
+    public List<PlayerPassive> PlayerPassivesList { get { return passives; } }
 
     private Player player;
     private PlayerController playerController;
@@ -70,6 +75,13 @@ public class PlayerInventory : MonoBehaviour
     {
         GameObject passiveGO = Instantiate(newPassive.gameObject, transform.position, Quaternion.identity, playerPassivesParent);
         PlayerPassive passive = passiveGO.GetComponent<PlayerPassive>();
+        passive.CurrentLevel = 1;
+        
+        if (passive.MultiplierType == StatType.DOUBLE_ATTACK_CHANCE)
+        {
+            player.CanDoubleAttack = true;
+        }
+
         passives.Add(passive);
         ApplyMultiplier(passive);
     }
@@ -96,35 +108,19 @@ public class PlayerInventory : MonoBehaviour
 
     private void ApplyMultiplier(PlayerPassive passive)
     {
-        var value = passive.CurrentLevel * passive.InceasePerLevel;
-        player.SetMultiplier(passive.MultiplierType, value);
+        player.SetMultiplier(passive.MultiplierType, passive.Value);
     }
 
     private IEnumerator ChoosePassive()
     {
         GameplayManager.Instance.PauseGame();
 
-        List<PlayerPassive> choices = new List<PlayerPassive>();    
-        if (availablePassives.Count <= 3)
-            availablePassives.ForEach(passive => choices.Add(passive));
-        else
-        {
-            List<PlayerPassive> tmp = new List<PlayerPassive>(availablePassives);
-            for (int i = 0; i < 3; i++)
-            {
-                int choiceIndex = Random.Range(0, tmp.Count);
-                choices.Add(tmp[choiceIndex]);
-                tmp.RemoveAt(choiceIndex);
-            }
-        }
-
-        // TODO remove lvlup debug
-        Debug.Log("==========================================");
-        choices.ForEach(choice => Debug.Log($"Choice {choices.IndexOf(choice)}: {choice.name}"));
-        Debug.Log("==========================================");
+        List<PlayerPassive> choices = GetRandomAvailablePassives();
 
         playerController.IndexSelected = -1;
         playerController.SwitchActionMap(PlayerActionTypes.PassiveSelect);
+
+        LevelUpDisplay.Create(choices, passives);
 
         yield return new WaitUntil(() => playerController.IndexSelected != -1 && playerController.IndexSelected + 1 <= choices.Count);
 
@@ -151,20 +147,45 @@ public class PlayerInventory : MonoBehaviour
         GameplayManager.Instance.ResumeGame();
     }
 
-    public void PickUpWeapon(PlayerWeapon newWeapon)
+    private List<PlayerPassive> GetRandomAvailablePassives()
     {
-        if (weapons.Count >= maxWeaponsCount)
+        List<PlayerPassive> choices = new List<PlayerPassive>();
+        if (availablePassives.Count <= 3)
+            availablePassives.ForEach(passive => choices.Add(passive));
+        else
         {
-            StartCoroutine(ChooseWeaponToReplace(newWeapon));
-            return;
+            List<PlayerPassive> tmp = new List<PlayerPassive>(availablePassives);
+            for (int i = 0; i < 3; i++)
+            {
+                int choiceIndex = Random.Range(0, tmp.Count);
+                choices.Add(tmp[choiceIndex]);
+                tmp.RemoveAt(choiceIndex);
+            }
         }
 
+        choices.ForEach(passive =>
+        {
+            var playerPassive = passives.Find(p => p.PassiveName == passive.PassiveName);
+            if (playerPassive)
+                passive.CurrentLevel = playerPassive.CurrentLevel;
+        });
+
+        return choices;
+    }
+
+    public void PickUpWeapon(PlayerWeapon newWeapon)
+    {
         PlayerWeapon weaponInInventory = weapons.Find(p => p.WeaponName == newWeapon.WeaponName);
         if (weaponInInventory)
         {
             weaponInInventory.LevelUp();
             OnWeaponLevelUp?.Invoke();
             Destroy(newWeapon.gameObject);
+            return;
+        }
+        if (weapons.Count >= maxWeaponsCount)
+        {
+            StartCoroutine(ChooseWeaponToReplace(newWeapon));
             return;
         }
 
@@ -177,18 +198,26 @@ public class PlayerInventory : MonoBehaviour
     private IEnumerator ChooseWeaponToReplace(PlayerWeapon newWeapon)
     {
         GameplayManager.Instance.PauseGame();
-
+        UiOnWeaponReplace.Invoke();
         playerController.IndexSelected = -1;
         playerController.SwitchActionMap(PlayerActionTypes.PassiveSelect);
 
         yield return new WaitUntil(() => playerController.IndexSelected != -1);
 
-        ReplaceWeapon(newWeapon, playerController.IndexSelected);
-        OnWeaponReplace?.Invoke();
+        if (playerController.IndexSelected == 3)
+        {
+            playerController.SwitchActionMap(PlayerActionTypes.Gameplay);
+            GameplayManager.Instance.ResumeGame();
+        }
+        else
+        {
+            ReplaceWeapon(newWeapon, playerController.IndexSelected);
+            OnWeaponReplace?.Invoke();
 
-        playerController.SwitchActionMap(PlayerActionTypes.Gameplay);
+            playerController.SwitchActionMap(PlayerActionTypes.Gameplay);
 
-        GameplayManager.Instance.ResumeGame();
+            GameplayManager.Instance.ResumeGame();
+        }
     }
 
     private void ReplaceWeapon(PlayerWeapon weapon, int index)
@@ -205,8 +234,6 @@ public class PlayerInventory : MonoBehaviour
             SelectCurrentWeapon(index);
 
         Destroy(prevWeapon.gameObject);
-
-        //Debug.Log($"Replaced weapon at slot {index + 1}");
     }
 
     private void SelectCurrentWeapon(int index)
@@ -221,6 +248,7 @@ public class PlayerInventory : MonoBehaviour
             else
                 weapon.SetNotCurrentlyUsed();
         }
+        OnCurrentWeaponChange.Invoke();
     }
 
     public void UseWeaponEffect()
@@ -241,6 +269,7 @@ public class PlayerInventory : MonoBehaviour
         currentWeapon.SetNotCurrentlyUsed();
         currentWeapon = weapons[nextIndex];
         currentWeapon.SetCurrentlyUsed();
+        OnCurrentWeaponChange.Invoke();
     }
     
     public void PreviousWeapon()
@@ -254,6 +283,7 @@ public class PlayerInventory : MonoBehaviour
         currentWeapon.SetNotCurrentlyUsed();
         currentWeapon = weapons[nextIndex];
         currentWeapon.SetCurrentlyUsed();
+        OnCurrentWeaponChange.Invoke();
     }
 
     public void TryToEvolveWeapon()
@@ -294,6 +324,7 @@ public class PlayerInventory : MonoBehaviour
 
         GameObject evolvedWeaponObj = Instantiate(weaponToEvolve.EvolvedWeapon, weaponToEvolve.transform.position, new Quaternion(0, 0, 0, 0), playerWeaponsParent);
         PlayerWeapon evolvedWeapon = evolvedWeaponObj.GetComponent<PlayerWeapon>();
+        evolvedWeapon.transform.localScale = Vector3.one;
 
         int weaponToEvolveIndex = weapons.IndexOf(weaponToEvolve);
         weapons.RemoveAt(weaponToEvolveIndex);
@@ -303,5 +334,14 @@ public class PlayerInventory : MonoBehaviour
         
         if (isUsed)
             SelectCurrentWeapon(weaponToEvolveIndex);
+
+        evolvedWeapon.UpdateAttackRange(evolvedWeapon.WeaponName == WeaponName.KNIFE || evolvedWeapon.WeaponName == WeaponName.BLOODY_KNIFE);
+        OnWeaponEvolve?.Invoke();
+    }
+
+    public void UpdateWeaponRanges()
+    {
+        foreach (PlayerWeapon weapon in weapons)
+            weapon.UpdateAttackRange(weapon.WeaponName == WeaponName.KNIFE || weapon.WeaponName == WeaponName.BLOODY_KNIFE);
     }
 }

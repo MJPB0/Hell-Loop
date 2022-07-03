@@ -13,16 +13,17 @@ public class BaseEnemyWithoutHurtAnimation : Enemy
         StartCoroutine(WaitAndEnableMovement(attack.length));
 
         canAttack = false;
-        timeToNextAttack = timeBetweenAttacks;
+        timeToNextAttack = timeBetweenAttacks - attackTimeReduction - attackSpeedIncreasePerLevel * level;
     }
 
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, WeaponName weaponName)
     {
         if (!canTakeDamage) return;
 
         health -= damage;
+        GameplayManager.Instance.CountDamageDealt(damage, weaponName);
+
         OnEnemyTakeDamage?.Invoke();
-        //Debug.Log($"{gameObject.name} took {damage} damage");
 
         if (health <= 0)
         {
@@ -30,7 +31,8 @@ public class BaseEnemyWithoutHurtAnimation : Enemy
             canTakeDamage = false;
             canMove = false;
             isAlive = false;
-            //Debug.Log($"{gameObject.name} died");
+
+            GameplayManager.Instance.AddEnemyKilled();
 
             anim.SetTrigger(ENEMY_DEATH_TRIGGER);
             OnEnemyDeath?.Invoke();
@@ -41,6 +43,6 @@ public class BaseEnemyWithoutHurtAnimation : Enemy
     {
         if (!playerInRange) return;
 
-        player.TakeDamage(damage);
+        player.TakeDamage(Damage);
     }
 }

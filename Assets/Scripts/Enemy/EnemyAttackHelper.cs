@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemyAttackHelper : MonoBehaviour
 {
-    private Enemy attacker;
+    public Enemy attacker;
 
     private void Start()
     {

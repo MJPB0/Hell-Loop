@@ -48,27 +48,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsInteractable: 0
   AutomaticInteraction: 0
-  weaponName: 13
-  passiveNeededToEvolve: 0
+  weaponName: 12
+  passiveNeededToEvolve: 2
   isEvolved: 1
   evolvedWeapon: {fileID: 0}
   currentLevel: 1
   maxLevel: 5
+  levelUpgrades:
+  - {fileID: 11400000, guid: f29c05b180a35534890f75edb5640ea0, type: 2}
+  - {fileID: 11400000, guid: b4db366097c6f1a46b3792dcf8a59b7f, type: 2}
+  - {fileID: 11400000, guid: b3150381a8d569945b04778be82ca1ec, type: 2}
+  - {fileID: 11400000, guid: b2b1c118308c915478126e4579abe3b6, type: 2}
   canAttack: 1
   timeToNextAttack: 0
   timeBetweenAttacks: 2
   attackSpeed: 1
-  attackRange: 1
-  criticalChance: 0.5
+  additionalAttackSpeed: 0
+  attackRange: 2.5
+  additionalAttackRange: 0
   primaryEffect: {fileID: 11400000, guid: e91026ea9d6a0ba4981c1d04d85e542e, type: 2}
   secondaryEffect: {fileID: 11400000, guid: e1063c776501a0e4daf19dcffaf0489c, type: 2}
-  sprite: {fileID: 0}
+  sprite: {fileID: 1742481671, guid: 72be58ed8ea3738408c013e7db399f55, type: 3}
   enemiesInRange: []
   pickupCollider: {fileID: 0}
   rangeCollider: {fileID: 6757083444759938825}
   projectilesParent: {fileID: 0}
   onHitEffect: {fileID: 0}
   onHitEffectAnimation: {fileID: 0}
+  weaponEffect: {fileID: 1435442459346085233, guid: a430edb6adba7a042bffee84304f7b48, type: 3}
+  weaponEffectClip: {fileID: 7400000, guid: 95129f5d233d09249ae56a3eb275ac4b, type: 2}
+  effectPositionOffset: {x: 0.5, y: 0, z: 0}
 --- !u!61 &6757083444759938825
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -93,7 +102,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.8, y: 1.5}
+  m_Size: {x: 2, y: 1.5}
   m_EdgeRadius: 0
 --- !u!1 &6757083446110983425
 GameObject:

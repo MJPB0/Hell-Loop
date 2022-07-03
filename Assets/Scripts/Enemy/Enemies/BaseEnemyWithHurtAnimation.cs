@@ -8,18 +8,19 @@ public class BaseEnemyWithHurtAnimation : Enemy
     {
         if (!playerInRange) return;
 
-        player.TakeDamage(damage);
+        player.TakeDamage(Damage);
     }
 
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, WeaponName weaponName)
     {
         if (!canTakeDamage) return;
 
         health -= damage;
+        GameplayManager.Instance.CountDamageDealt(damage, weaponName);
+
         anim.SetTrigger(ENEMY_GET_HIT_TRIGGER);
         StartCoroutine(WaitAndEnableMovement(getHit.length));
         OnEnemyTakeDamage?.Invoke();
-        //Debug.Log($"{gameObject.name} took {damage} damage");
 
         if (health <= 0)
         {
@@ -27,6 +28,8 @@ public class BaseEnemyWithHurtAnimation : Enemy
             canTakeDamage = false;
             canMove = false;
             isAlive = false;
+
+            GameplayManager.Instance.AddEnemyKilled();
 
             anim.SetTrigger(ENEMY_DEATH_TRIGGER);
             OnEnemyDeath?.Invoke();
@@ -39,6 +42,6 @@ public class BaseEnemyWithHurtAnimation : Enemy
         StartCoroutine(WaitAndEnableMovement(attack.length));
 
         canAttack = false;
-        timeToNextAttack = timeBetweenAttacks;
+        timeToNextAttack = timeBetweenAttacks - attackTimeReduction - attackSpeedIncreasePerLevel * level;
     }
 }

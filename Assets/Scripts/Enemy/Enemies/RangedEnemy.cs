@@ -31,11 +31,13 @@ public class RangedEnemy : Enemy
         SpawnProjectile();
     }
 
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, WeaponName weaponName)
     {
         if (!canTakeDamage) return;
 
         health -= damage;
+        GameplayManager.Instance.CountDamageDealt(damage, weaponName);
+
         anim.SetTrigger(ENEMY_GET_HIT_TRIGGER);
         StartCoroutine(WaitAndEnableMovement(getHit.length));
         OnEnemyTakeDamage?.Invoke();
@@ -48,6 +50,8 @@ public class RangedEnemy : Enemy
             canMove = false;
             isAlive = false;
 
+            GameplayManager.Instance.AddEnemyKilled();
+
             anim.SetTrigger(ENEMY_DEATH_TRIGGER);
             OnEnemyDeath?.Invoke();
         }
@@ -59,7 +63,7 @@ public class RangedEnemy : Enemy
         StartCoroutine(WaitAndEnableMovement(attack.length));
 
         canAttack = false;
-        timeToNextAttack = timeBetweenAttacks;
+        timeToNextAttack = timeBetweenAttacks - attackTimeReduction - attackSpeedIncreasePerLevel * level;
     }
 
     private void SpawnProjectile()

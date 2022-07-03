@@ -44,8 +44,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697deb9d40acb574cb94b016778c0b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passiveName: 14
-  multiplierType: 9
-  currentLevel: 1
-  maxLevel: 5
-  inceasePerLevel: 0.5
+  passiveName: 13
+  passiveDescription: increase attack range by
+  multiplierType: 8
+  baseValue: 0.05
+  additionalValue: 0
+  currentLevel: 0
+  maxLevel: 4
+  levelUpgrades:
+  - 0.05
+  - 0.05
+  - 0.1
+  sprite: {fileID: 21300000, guid: c2bc8d1300f89ac4ca3699ae3c355421, type: 3}

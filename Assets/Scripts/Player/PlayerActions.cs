@@ -125,6 +125,15 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Pause"",
+                    ""type"": ""Button"",
+                    ""id"": ""7c9255e6-c7c3-4737-9fbe-a1bf2af248dd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -292,6 +301,17 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                     ""action"": ""Three Clicked"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5623ce08-4360-4c8b-956e-3c5088bf541b"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pause"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -447,6 +467,7 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
         m_Gameplay_OneClicked = m_Gameplay.FindAction("One Clicked", throwIfNotFound: true);
         m_Gameplay_TwoClicked = m_Gameplay.FindAction("Two Clicked", throwIfNotFound: true);
         m_Gameplay_ThreeClicked = m_Gameplay.FindAction("Three Clicked", throwIfNotFound: true);
+        m_Gameplay_Pause = m_Gameplay.FindAction("Pause", throwIfNotFound: true);
         // PassiveSelect
         m_PassiveSelect = asset.FindActionMap("PassiveSelect", throwIfNotFound: true);
         m_PassiveSelect_OneClicked = m_PassiveSelect.FindAction("One Clicked", throwIfNotFound: true);
@@ -527,6 +548,7 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
     private readonly InputAction m_Gameplay_OneClicked;
     private readonly InputAction m_Gameplay_TwoClicked;
     private readonly InputAction m_Gameplay_ThreeClicked;
+    private readonly InputAction m_Gameplay_Pause;
     public struct GameplayActions
     {
         private @PlayerActions m_Wrapper;
@@ -542,6 +564,7 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
         public InputAction @OneClicked => m_Wrapper.m_Gameplay_OneClicked;
         public InputAction @TwoClicked => m_Wrapper.m_Gameplay_TwoClicked;
         public InputAction @ThreeClicked => m_Wrapper.m_Gameplay_ThreeClicked;
+        public InputAction @Pause => m_Wrapper.m_Gameplay_Pause;
         public InputActionMap Get() { return m_Wrapper.m_Gameplay; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -584,6 +607,9 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                 @ThreeClicked.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThreeClicked;
                 @ThreeClicked.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThreeClicked;
                 @ThreeClicked.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnThreeClicked;
+                @Pause.started -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPause;
+                @Pause.performed -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPause;
+                @Pause.canceled -= m_Wrapper.m_GameplayActionsCallbackInterface.OnPause;
             }
             m_Wrapper.m_GameplayActionsCallbackInterface = instance;
             if (instance != null)
@@ -621,6 +647,9 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
                 @ThreeClicked.started += instance.OnThreeClicked;
                 @ThreeClicked.performed += instance.OnThreeClicked;
                 @ThreeClicked.canceled += instance.OnThreeClicked;
+                @Pause.started += instance.OnPause;
+                @Pause.performed += instance.OnPause;
+                @Pause.canceled += instance.OnPause;
             }
         }
     }
@@ -736,6 +765,7 @@ public partial class @PlayerActions : IInputActionCollection2, IDisposable
         void OnOneClicked(InputAction.CallbackContext context);
         void OnTwoClicked(InputAction.CallbackContext context);
         void OnThreeClicked(InputAction.CallbackContext context);
+        void OnPause(InputAction.CallbackContext context);
     }
     public interface IPassiveSelectActions
     {

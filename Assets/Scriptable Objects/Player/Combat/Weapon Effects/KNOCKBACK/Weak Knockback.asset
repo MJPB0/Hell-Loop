@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   effectType: 3
   duration: 0
-  power: 2
+  power: 1
   timeBetweenAttacks: 0

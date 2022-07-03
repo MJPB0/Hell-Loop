@@ -14,12 +14,11 @@ public abstract class PlayerWeapon : InteractableObject
     protected SpriteRenderer spriteRenderer;
     protected PlayerInventory playerInventory;
 
-    protected UnityAction weaponWasUsed;
+    public UnityAction WeaponIsUsed;
 
     protected Player player;
     protected PlayerController controller;
 
-    [Space]
     [Header("Weapon info")]
     [SerializeField] protected WeaponName weaponName;
     [SerializeField] protected PassiveName passiveNeededToEvolve;
@@ -28,12 +27,12 @@ public abstract class PlayerWeapon : InteractableObject
     [Space]
     [SerializeField] protected GameObject evolvedWeapon;
 
-    [Space]
     [Header("Weapon level")]
     [SerializeField] protected int currentLevel = 1;
     [SerializeField] protected int maxLevel;
 
-    [Space]
+    [SerializeField] protected WeaponLevelUpgradeSO[] levelUpgrades;
+
     [Header("Weapon usage")]
     [SerializeField] protected bool canAttack = true;
     [SerializeField] protected float timeToNextAttack = 0f;
@@ -41,42 +40,86 @@ public abstract class PlayerWeapon : InteractableObject
 
     [Space]
     [SerializeField] protected float attackSpeed;
+    [SerializeField] protected float additionalAttackSpeed;
+
     [SerializeField] protected float attackRange;
-    [SerializeField] protected float criticalChance;
+    [SerializeField] protected float additionalAttackRange;
 
     [Space]
     [SerializeField] protected WeaponEffect primaryEffect;
     [SerializeField] protected WeaponEffect secondaryEffect;
 
-    [Space]
     [Header("Weapon sprite")]
     [SerializeField] private Sprite sprite;
 
     [Space]
     [SerializeField] protected List<Enemy> enemiesInRange;
 
-    [Space]
     [Header("Colliders")]
     [SerializeField] private CircleCollider2D pickupCollider;
     [SerializeField] protected Collider2D rangeCollider;
 
-    [Space]
     [Header("Projectiles")]
     [SerializeField] protected Transform projectilesParent;
 
-    [Space]
-    [Header("On hit animations")]
+    [Header("VFX")]
     [SerializeField] protected GameObject onHitEffect;
     [SerializeField] protected AnimationClip onHitEffectAnimation;
 
     public bool CanAttack { get { return canAttack; } }
+
     public WeaponName WeaponName { get { return weaponName; } }
     public PassiveName PassiveNeededToEvolve { get { return passiveNeededToEvolve; } }
-    public float AttackSpeed { get { return attackSpeed;} }
-    public float AttackRange { get { return attackRange;} }
+
+    public float AttackSpeed { get { return attackSpeed * player.AttackSpeedMultiplier + additionalAttackSpeed; } }
+    public float AttackRange { get { return attackRange * player.AttackRangeMultiplier + additionalAttackRange; } }
+    public float TimeToNextAttack { get { return timeToNextAttack; } }
 
     public int CurrentLevel { get { return currentLevel; } }
     public int MaxLevel { get { return maxLevel; } }
+    public string NextWeaponStatUpgrade 
+    { 
+        get
+        {
+            WeaponLevelUpgradeSO nextUpg = levelUpgrades[CurrentLevel - 1];
+            string decreases = nextUpg.StatType == WeaponStatType.DAMAGE_INTERVAL ? "-" : "+";
+            string text = "";
+            switch (nextUpg.StatType)
+            {
+                case WeaponStatType.DAMAGE_INTERVAL:
+                    text = "damage interval";
+                    break;
+                case WeaponStatType.ENEMY_HIT_CAP:
+                    text = "enemy hit cap";
+                    break;
+                case WeaponStatType.ATTACK_RANGE:
+                    text = "attack range";
+                    break;
+                case WeaponStatType.ATTACK_SPEED:
+                    text = "attack speed";
+                    break;
+                case WeaponStatType.PROJECTILE_SPEED:
+                    text = "projectile speed";
+                    break;
+            }
+
+            return $"{decreases}{nextUpg.Value * 100}% {text}";
+        } 
+    }
+    public string NextWeaponEffectUpgrade
+    {
+        get
+        {
+            WeaponLevelUpgradeSO nextUpg = levelUpgrades[CurrentLevel - 1];
+
+            if (nextUpg.PrimaryEffectUpgrade)
+                return "Primary effect upgrade!";
+            else if (nextUpg.SecondaryEffectUpgrade)
+                return "Secondary effect upgrade!";
+
+            return "";
+        }
+    }
 
     public bool IsEvolved { get { return isEvolved; } }
     public GameObject EvolvedWeapon { get { return evolvedWeapon; } }
@@ -89,24 +132,32 @@ public abstract class PlayerWeapon : InteractableObject
     public GameObject OnHitEffect { get { return onHitEffect; } }
     public AnimationClip OnHitEffectAnimation { get { return onHitEffectAnimation; } }
 
-    void Awake()
+    public Sprite WeaponSprite { get { return sprite; } }
+
+    protected void Awake()
     {
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        playerInventory = FindObjectOfType<PlayerInventory>();
+        player = FindObjectOfType<Player>();
+        controller = player.gameObject.GetComponent<PlayerController>();
     }
 
     protected void Start()
     {
         gameObject.transform.localScale = new Vector3(.8f, .8f, .8f);
-        spriteRenderer.sprite = sprite;
+        if (!isEvolved)
+            spriteRenderer.sprite = sprite;
 
         if (pickupCollider)
             pickupCollider.enabled = true;
         if (rangeCollider && !isEvolved)
             rangeCollider.enabled = false;
 
-        playerInventory = FindObjectOfType<PlayerInventory>();
-        player = FindObjectOfType<Player>();
-        controller = player.gameObject.GetComponent<PlayerController>();
+        if (levelUpgrades.Length != maxLevel - 1)
+        {
+            Debug.LogError($"Item: {gameObject.name} has less/more upgrades than required");
+        }
 
         enemiesInRange = new List<Enemy>();
 
@@ -116,7 +167,7 @@ public abstract class PlayerWeapon : InteractableObject
     void Update()
     {
         if (timeToNextAttack > 0)
-            timeToNextAttack -= Time.deltaTime * attackSpeed * player.AttackSpeedMultiplier;
+            timeToNextAttack -= Time.deltaTime;
         else
         {
             timeToNextAttack = 0f;
@@ -141,13 +192,59 @@ public abstract class PlayerWeapon : InteractableObject
         gameObject.layer = LayerMask.NameToLayer(LAYER_AFTER_PICKUP);
 
         spriteRenderer.sprite = null;
+
+        UpdateAttackRange(WeaponName == WeaponName.KNIFE || WeaponName == WeaponName.BLOODY_KNIFE);
     }
 
     public void LevelUp()
     {
         if (currentLevel < maxLevel)
+        {
+            DisplayFloatingText(NextWeaponStatUpgrade, DamagePopupOwner.PLAYER_HEAL);
+            StartCoroutine(WaitAndDisplayFloatingText(.25f, NextWeaponEffectUpgrade, DamagePopupOwner.PLAYER_HEAL));
+
             currentLevel++;
+            if (CheckIfUpgradeIsAvailable())
+                StartCoroutine(WaitAndDisplayFloatingText(.5f, "Upgrade available!", DamagePopupOwner.ENEMY_CRITICAL_HIT));
+
+            ApplyUpgrades();
+        }
     }
+
+    private bool CheckIfUpgradeIsAvailable()
+    {
+        var passive = playerInventory.PlayerPassivesList.Find(passive => passive.PassiveName == passiveNeededToEvolve);
+        return passive && currentLevel == maxLevel;
+    }
+
+    private void DisplayFloatingText(string text, DamagePopupOwner color)
+    {
+        Vector3 positionVector = new(transform.position.x + 8.2f, transform.position.y - 1.5f, transform.position.z);
+
+        DamagePopup.Create(positionVector, text, color);
+    }
+
+    IEnumerator WaitAndDisplayFloatingText(float time, string weaponEffect, DamagePopupOwner color)
+    {
+        yield return new WaitForSeconds(time);
+        DisplayFloatingText(weaponEffect, color);
+    }
+
+    public void UpdateAttackRange(bool onlyHoriozontal)
+    {
+        if (rangeCollider.GetType() == typeof(BoxCollider2D))
+        {
+            (rangeCollider as BoxCollider2D).size = new(AttackRange, onlyHoriozontal ? (rangeCollider as BoxCollider2D).size.y : AttackRange);
+            return;
+        }
+
+        if (rangeCollider.GetType() == typeof(CircleCollider2D))
+        {
+            (rangeCollider as CircleCollider2D).radius = AttackRange;
+        }
+    }
+
+    protected abstract void ApplyUpgrades();
 
     public abstract void Use();
     public abstract void SetCurrentlyUsed();

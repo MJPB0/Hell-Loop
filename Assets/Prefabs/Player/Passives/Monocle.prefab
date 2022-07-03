@@ -44,8 +44,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697deb9d40acb574cb94b016778c0b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passiveName: 6
+  passiveName: 5
+  passiveDescription: increase effect power by
   multiplierType: 6
-  currentLevel: 1
+  baseValue: 0.1
+  additionalValue: 0
+  currentLevel: 0
   maxLevel: 5
-  inceasePerLevel: 0.2
+  levelUpgrades:
+  - 0.05
+  - 0.05
+  - 0.15
+  - 0.15
+  sprite: {fileID: 21300000, guid: aa19a26b117618e42b8552b77a687e8c, type: 3}

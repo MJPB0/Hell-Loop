@@ -32,6 +32,7 @@ public class AreaOfEffect : MonoBehaviour
         playerWeapon = weapon;
         aoeCollider.enabled = true;
         aoeCollider.radius = weapon.AttackRange;
+        Debug.Log(weapon.AttackRange);
 
         GetComponentInChildren<SpriteRenderer>().transform.localScale = Vector3.one * bodySizeMultiplier * weapon.AttackRange;
     }

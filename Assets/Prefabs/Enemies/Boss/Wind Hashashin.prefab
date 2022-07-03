@@ -118,6 +118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ecb9a3333f6f5c140a27841c88313859, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attacker: {fileID: 0}
 --- !u!1 &6311218960623421728
 GameObject:
   m_ObjectHideFlags: 0
@@ -165,7 +166,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d53a1f5e00a6aae4a85a391d04bbcac3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  health: 100
+  level: 1
+  levelupInterval: 60
+  movementIncreasePerLevel: 0.2
+  spawnChanceIncreasePerLevel: 0.2
+  healthIncreasePerLevel: 5
+  damageIncreasePerLevel: 0.2
+  attackRangeIncreasePerLevel: 0.1
+  attackSpeedIncreasePerLevel: 0.05
+  timeBetweenAttacksDecreasePerLevel: 0.01
+  dropRateIncreasePerLevel: 0.02
+  dropAmountIncreasePerLevel: 0.2
+  health: 250
   isAlive: 1
   canTakeDamage: 1
   canMove: 1
@@ -178,9 +190,9 @@ MonoBehaviour:
   spawnChanceMultiplier: 1
   canBeKnockedBack: 1
   playerInRange: 0
-  damage: 10
+  damage: 15
   attackRange: 2
-  attackSpeed: 1
+  attackTimeReduction: 0
   isFrozen: 0
   canAttack: 0
   timeBetweenAttacks: 2
@@ -195,9 +207,23 @@ MonoBehaviour:
   timeBetweenDropSpawns: 0.2
   minSpawnRadius: 0.5
   maxSpawnRadius: 1
-  loot: []
-  amounts: 
-  chances: []
+  loot:
+  - {fileID: 211508751433633088, guid: 0f2885d0316292a43bef65365b23cad4, type: 3}
+  - {fileID: 2321498086740699545, guid: ea88cc08bff027b429c31d365a48b10c, type: 3}
+  - {fileID: 1132399639603480551, guid: 77117fbfb1e8fb442a2443facbc62e78, type: 3}
+  - {fileID: 7643490314235115168, guid: 54c274f5bab2e8e4eb9c6d77102eb37a, type: 3}
+  - {fileID: 25299036898733790, guid: 7a16c8e9d1d7955458e5631a0764bd26, type: 3}
+  - {fileID: 8453132409690506085, guid: 8b96e73f2f7ecb44a99359d3fdbb155b, type: 3}
+  - {fileID: 1766166100226446062, guid: 4fb10aef6eae4bb43acc530c8235126f, type: 3}
+  amounts: 01000000010000000100000001000000020000000a00000014000000
+  chances:
+  - 0.7
+  - 0.8
+  - 0.8
+  - 0.8
+  - 0.9
+  - 0.7
+  - 0.9
   specialAttackDamageMultiplier: 2
   canUseSpecialAttack: 0
   timeBetweenSpecialAttacks: 5
@@ -213,7 +239,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.06272471}

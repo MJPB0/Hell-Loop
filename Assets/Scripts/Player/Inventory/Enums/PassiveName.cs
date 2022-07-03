@@ -4,10 +4,9 @@ using UnityEngine;
 
 public enum PassiveName
 {
-    SACRED_HEART,
+    RARE_STEAK,
     THUNDER_IN_A_BOTTLE,
     BEANS,
-    DUMBBELL,
     BOILING_BLOOD,
     POCKET_WATCH,
     MONOCLE,

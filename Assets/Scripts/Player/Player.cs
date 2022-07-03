@@ -1,16 +1,24 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class Player : MonoBehaviour
 {
     public UnityAction OnPlayerDash;
+
     public UnityAction OnPlayerTakeDamage;
+    public UnityAction OnPlayerHeal;
     public UnityAction OnPlayerDeath;
+
     public UnityAction OnPlayerExperiencePickup;
     public UnityAction OnPlayerGoldPickup;
+
+    public UnityAction OnPlayerMaxHealthChange;
     public UnityAction OnPlayerLevelUp;
+
+    public UnityAction OnPlayerMove;
+
+    public UnityAction<Vector3> OnPlayerDoubleAttack;
 
     #region Player stats
 
@@ -19,45 +27,44 @@ public class Player : MonoBehaviour
     [SerializeField] private int currentHealth = 100;
 
     [Space]
+    [SerializeField] private int healthRestoreOnLevelUp = 15;
+    [SerializeField] private int healthIncreasePerLevelUp = 5;
+
+    [Space]
     [SerializeField] private float baseHealthMultiplier = 1;
     [SerializeField] private float healthMultiplier = 0;
 
     [SerializeField] private int temporaryArmor = 0;
 
     [Header("Combat")]
-    [SerializeField] private float baseAttackSpeedMultiplier = 1f;
-    [SerializeField] private float attackSpeedMultiplier = 1f;
+    [SerializeField] private float attackSpeedMultiplier = 0f;
+
+    [Space]
+    public bool CanDoubleAttack = false;
+    [SerializeField] private float doubleAttackChance = 0f;
+
+    [Space]
+    [SerializeField] private float attackRangeMultiplier = 0f;
 
     [Space]
     [SerializeField] private float baseCriticalChance = .1f;
-    [SerializeField] private float baseCriticalChanceMultiplier = 1f;
     [SerializeField] private float criticalChanceMultiplier = 1f;
 
     [Space]
     [SerializeField] private float baseCriticalDamage = 2f;
-    [SerializeField] private float baseCriticalDamageMultiplier = 1f;
     [SerializeField] private float criticalDamageMultiplier = 1f;
 
     [Space]
-    [SerializeField] private float baseEffectDurationMultiplier = 1f;
     [SerializeField] private float effectDurationMultiplier = 1f;
 
     [Space]
-    [SerializeField] private float baseEffectPowerMultiplier = 1f;
     [SerializeField] private float effectPowerMultiplier = 1f;
 
     [Space]
-    [SerializeField] private float baseBulletSpeedMultiplier = 1f;
     [SerializeField] private float bulletSpeedMultiplier = 1f;
-
-    [Space]
-    [SerializeField] private float baseAttackRangeMultiplier = 1f;
-    [SerializeField] private float attackRangeMultiplier = 1f;
 
     [Header("Movement")]
     [SerializeField] private float baseMovementSpeed = 4f;
-    [SerializeField] private float baseMovementSpeedMultiplier = 1f;
-    [SerializeField] private float movementSpeedMultiplier = 1f;
 
     [Space]
     public float DashStrength = 30f;
@@ -67,26 +74,7 @@ public class Player : MonoBehaviour
     [Space]
     public float TimeToNextDash = 0f;
     [SerializeField] private float baseDashCooldown = 4f;
-    [SerializeField] private float baseDashCooldownMultiplier = 1f;
     [SerializeField] private float dashCooldownMultiplier = 1f;
-
-    [Header("Weapons' masteries")]
-    [SerializeField] private int knifeMastery = 1;
-    [SerializeField] private int swordMasteryLevel = 1;
-    [SerializeField] private int tomahawkMasteryLevel = 1;
-    [SerializeField] private int axeMasteryLevel = 1;
-
-    [Space]
-    [SerializeField] private int iceWandMasteryLevel = 1;
-    [SerializeField] private int fireWandMasteryLevel = 1;
-    [SerializeField] private int airWandMasteryLevel = 1;
-    [SerializeField] private int earthWandMasteryLevel = 1;
-
-    [Space]
-    [SerializeField] private int pistolMasteryLevel = 1;
-    [SerializeField] private int shotgunMasteryLevel = 1;
-    [SerializeField] private int rifleMasteryLevel = 1;
-    [SerializeField] private int sniperMasteryLevel = 1;
 
     [Header("Other")]
     [SerializeField] private float baseLuck = .1f;
@@ -94,11 +82,12 @@ public class Player : MonoBehaviour
 
     [Space]
     [SerializeField] private float basePickupRange = 1f;
-    [SerializeField] private float basePickupRangeMultiplier = 1f;
     [SerializeField] private float pickupRangeMultiplier = 1f;
 
     [Header("Experience")]
-    [SerializeField] private float baseExperienceGainMultiplier = 1;
+    [SerializeField] private int baseExperienceIncrease = 100;
+
+    [Space]
     [SerializeField] private float experienceGainMultiplier = 1;
 
     [Space]
@@ -107,22 +96,22 @@ public class Player : MonoBehaviour
     [SerializeField] private int currentLevel = 1;
 
     [Header("Gold")]
-    [SerializeField] private float baseGoldGainMultiplier = 1;
     [SerializeField] private float goldGainMultiplier = 1;
 
-    [Space]
-    [SerializeField] private int acquiredGold = 0;
+    public int acquiredGold = 0;
 
     #endregion
 
     [Header("Checks")]
     public bool IsAlive = true;
     public bool CanTakeDamage = true;
+    public bool CanPickupExperience = true;
 
     [Space]
     public bool IsDashing = false;
 
     [Space]
+    public bool IsStunned = false;
     public bool CanMove = true;
     public bool CanDash = true;
 
@@ -131,28 +120,47 @@ public class Player : MonoBehaviour
 
     #region Accessors
 
-    public float MovementSpeed { get { return baseMovementSpeed * (baseMovementSpeedMultiplier + movementSpeedMultiplier); } }
-    public float DashCooldown { get { return baseDashCooldown * (baseDashCooldown + dashCooldownMultiplier); } }
+    public float MovementSpeed { get { return baseMovementSpeed; } }
+    public float DashCooldown { get { return baseDashCooldown * DashCooldownMultiplier; } }
+    public float Luck { get { return baseLuck + baseLuck * luckMultiplier; } }
 
-    public int MaxHealth { get { return Mathf.RoundToInt(baseHealth * (baseHealthMultiplier + healthMultiplier)); } }
+    public int MaxHealth { get { return Mathf.RoundToInt(baseHealth * HealthMultiplier + healthIncreasePerLevelUp * currentLevel); } }
     public int Health { get { return currentHealth; } }
     public int Armor { get { return temporaryArmor; } }
 
-    public float AttackSpeedMultiplier { get { return baseAttackSpeedMultiplier + attackSpeedMultiplier; } }
-    public float EffectDurationMultiplier { get { return baseEffectDurationMultiplier + effectDurationMultiplier; } }
-    public float EffectPowerMultiplier { get { return baseEffectPowerMultiplier + effectPowerMultiplier; } }
-    public float BulletSpeedMultiplier { get { return baseBulletSpeedMultiplier + bulletSpeedMultiplier; } }
-    public float AttackRangeMultiplier { get { return baseAttackRangeMultiplier + attackRangeMultiplier; } }
+    public float AttackSpeedMultiplier { get { return attackSpeedMultiplier; } }
 
-    public float CriticalChance { get { return baseCriticalChance * (baseCriticalChanceMultiplier + criticalChanceMultiplier); } }
-    public float CriticalDamageMultiplier { get { return baseCriticalDamage * (baseCriticalDamageMultiplier + criticalDamageMultiplier); } }
-    public float PickupRange { get { return basePickupRange * (basePickupRangeMultiplier + pickupRangeMultiplier); } }
+    public float AttackRangeMultiplier { get { return 1 + attackRangeMultiplier; } }
+    public float EffectDurationMultiplier { get { return 1 + effectDurationMultiplier; } }
+    public float EffectPowerMultiplier { get { return 1 + effectPowerMultiplier; } }
+    public float BulletSpeedMultiplier { get { return 1 + bulletSpeedMultiplier; } }
+    public float DashCooldownMultiplier { get { return 1 + dashCooldownMultiplier; } }
+    public float HealthMultiplier { get { return 1 + healthMultiplier; } }
+
+    public float ExperienceGainMultiplier {  get { return 1 + experienceGainMultiplier; } }
+    public float GoldGainMultiplier {  get { return 1 + goldGainMultiplier; } }
+
+    public float DoubleAttackChance { get { return doubleAttackChance; } }
+    public float CriticalChance { get { return baseCriticalChance + baseCriticalChance * criticalChanceMultiplier; } }
+    public float CriticalDamageMultiplier { get { return baseCriticalDamage + baseCriticalDamage * criticalDamageMultiplier; } }
+    public float PickupRange { get { return basePickupRange + basePickupRange * pickupRangeMultiplier; } }
+
+    public int CurrentExp { get { return currentExperience; } }
+    public int CurrentLvl { get { return currentLevel; } }
+    public int ExpToNextLvl { get { return experienceToNextLevel; } }
 
     #endregion
+
+    private ObjectInteraction objectInteraction;
+    private PlayerInventory playerInventory;
 
     private void Start()
     {
         currentHealth = MaxHealth;
+
+        objectInteraction = GetComponentInChildren<ObjectInteraction>();
+        playerInventory = GetComponent<PlayerInventory>();
+
     }
 
     public void Heal(int amount)
@@ -161,11 +169,16 @@ public class Player : MonoBehaviour
 
         int amountToHeal = currentHealth + amount < MaxHealth ? amount : MaxHealth - currentHealth;
         currentHealth += amountToHeal;
-        //Debug.Log($"Player healed {amountToHeal} hp");
+        GameplayManager.Instance.CountHealingDone(amountToHeal);
+
+        Vector3 positionVector;
+        positionVector = new Vector3(transform.position.x + 9.8f, transform.position.y - 1.5f, transform.position.z);
+        DamagePopup.Create(positionVector, amountToHeal.ToString(), DamagePopupOwner.PLAYER_HEAL);
+        OnPlayerHeal?.Invoke();
     }
 
     public void TakeDamage(int damage)
-    {
+    { 
         if (!CanTakeDamage || !IsAlive) return;
 
         int damageDealt = damage;
@@ -174,26 +187,28 @@ public class Player : MonoBehaviour
 
         if (damageDealt <= 0)
             return;
+        
+        currentHealth -= damageDealt;
+        GameplayManager.Instance.CountDamageTaken(damageDealt);
 
-        currentHealth -= damageDealt;   
+        Vector3 positionVector;
+        positionVector = new Vector3(transform.position.x + 9.8f, transform.position.y - 1.5f, transform.position.z);
+        DamagePopup.Create(positionVector, damageDealt.ToString(), DamagePopupOwner.PLAYER_HIT);
+
         OnPlayerTakeDamage?.Invoke();
 
         if (currentHealth <= 0f)
         {
-            // TODO Player death
             currentHealth = 0;
             OnPlayerDeath?.Invoke();
             GameplayManager.Instance.EndGame();
+            DeathScreenDisplay.Create();
         }
-
-        //Debug.Log($"Player took {damageDealt} damage!");
-        //Debug.Log($"Player has {currentHealth}hp");
     }
 
     private int AbsorbDamage(int damage)
     {
         int absorbedDamage = damage <= temporaryArmor ? damage : temporaryArmor;
-        //Debug.Log($"Player absorbed {absorbedDamage} damage!");
         temporaryArmor -= absorbedDamage;
         return damage - absorbedDamage;
     }
@@ -217,16 +232,23 @@ public class Player : MonoBehaviour
 
     public void AddExperience(int value)
     {
-        if (!IsAlive) return;
+        if (!IsAlive || !CanPickupExperience) return;
 
-        currentExperience += Mathf.RoundToInt(value * (baseExperienceGainMultiplier + experienceGainMultiplier));
+        int experienceGained = Mathf.RoundToInt(value * ExperienceGainMultiplier);
+        currentExperience += experienceGained;
+        GameplayManager.Instance.CountExperienceGained(experienceGained);
+
         OnPlayerExperiencePickup?.Invoke();
 
         if (experienceToNextLevel <= currentExperience)
         {
             currentExperience -= experienceToNextLevel;
-            // TODO experience needed to lvlup
-            experienceToNextLevel *= 2;
+
+            experienceToNextLevel += baseExperienceIncrease * currentLevel;
+
+            bool luckyHeal = Random.Range(0f, 1f) <= Luck;
+            Heal(luckyHeal ? healthRestoreOnLevelUp * 2 : healthRestoreOnLevelUp);
+
             currentLevel++;
 
             OnPlayerLevelUp?.Invoke();
@@ -237,56 +259,64 @@ public class Player : MonoBehaviour
     {
         if (!IsAlive) return;
 
-        acquiredGold += Mathf.RoundToInt(value * (baseGoldGainMultiplier + goldGainMultiplier));
+        acquiredGold += Mathf.RoundToInt(value * GoldGainMultiplier);
         OnPlayerGoldPickup?.Invoke();
     }
 
-    public void SetMultiplier(MultiplierType type, float value)
+    public void SetMultiplier(StatType type, float value)
     {
         switch (type)
         {
-            case MultiplierType.MOVEMENT_SPEED:
-                movementSpeedMultiplier = value;
+            case StatType.DOUBLE_ATTACK_CHANCE:
+                doubleAttackChance = value;
                 break;
-            case MultiplierType.ATTACK_SPEED:
+            case StatType.ATTACK_SPEED:
                 attackSpeedMultiplier = value;
                 break;
-            case MultiplierType.CRITICAL_CHANCE:
+            case StatType.CRITICAL_CHANCE:
                 criticalChanceMultiplier = value;
                 break;
-            case MultiplierType.CRITICAL_DAMAGE:
+            case StatType.CRITICAL_DAMAGE:
                 criticalDamageMultiplier = value;
                 break;
-            case MultiplierType.EFFECT_POWER:
+            case StatType.EFFECT_POWER:
                 effectPowerMultiplier = value;
                 break;
-            case MultiplierType.EFFECT_DURATION:
+            case StatType.EFFECT_DURATION:
                 effectDurationMultiplier = value;
                 break;
-            case MultiplierType.BULLET_SPEED:
+            case StatType.BULLET_SPEED:
                 bulletSpeedMultiplier = value;
                 break;
-            case MultiplierType.ATTACK_RANGE:
+            case StatType.ATTACK_RANGE:
                 attackRangeMultiplier = value;
+                UpdateAttackRanges();
                 break;
-            case MultiplierType.DASH_COOLDOWN:
+            case StatType.DASH_COOLDOWN:
                 dashCooldownMultiplier = value;
                 break;
-            case MultiplierType.LUCK:
+            case StatType.LUCK:
                 luckMultiplier = value;
                 break;
-            case MultiplierType.PICKUP_RANGE:
+            case StatType.PICKUP_RANGE:
                 pickupRangeMultiplier = value;
+                objectInteraction.UpdatePickupRange(PickupRange);
                 break;
-            case MultiplierType.HEALTH:
+            case StatType.HEALTH:
                 healthMultiplier = value;
+                OnPlayerMaxHealthChange?.Invoke();
                 break;
-            case MultiplierType.EXPERIENCE_GAIN:
+            case StatType.EXPERIENCE_GAIN:
                 experienceGainMultiplier = value;
                 break;
-            case MultiplierType.GOLD_GAIN:
+            case StatType.GOLD_GAIN:
                 goldGainMultiplier = value;
                 break;
         }
+    }
+
+    private void UpdateAttackRanges()
+    {
+        playerInventory.UpdateWeaponRanges();
     }
 }

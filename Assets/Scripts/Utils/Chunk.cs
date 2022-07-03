@@ -18,6 +18,6 @@ public class Chunk : MonoBehaviour
 
     public float EnemyMultiplier = 1f;
 
-    public bool IsSurrounded() => HasLeftChunk && HasRightChunk && HasTopChunk && HasBottomChunk &&
+    public bool IsSurrounded => HasLeftChunk && HasRightChunk && HasTopChunk && HasBottomChunk &&
             HasBottomRightChunk && HasBottomLeftChunk && HasTopLeftChunk && HasTopRightChunk;
 }

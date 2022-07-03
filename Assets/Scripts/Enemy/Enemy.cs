@@ -22,6 +22,26 @@ public abstract class Enemy : MonoBehaviour
 
     public EnemyEffects EnemyEffectsController { get; private set; }
 
+    [Header("Level")]
+    [SerializeField] protected int level = 1;
+    [SerializeField] protected float levelupInterval = 60f;
+
+    [Space]
+    [SerializeField] protected float movementIncreasePerLevel = .2f;
+    [SerializeField] protected float spawnChanceIncreasePerLevel = .2f;
+
+    [SerializeField] protected float healthIncreasePerLevel = 5f;
+
+    [Space]
+    [SerializeField] protected float damageIncreasePerLevel = .2f;
+    [SerializeField] protected float attackRangeIncreasePerLevel = .1f;
+    [SerializeField] protected float attackSpeedIncreasePerLevel = .05f;
+    [SerializeField] protected float timeBetweenAttacksDecreasePerLevel = .01f;
+
+    [Space]
+    [SerializeField] protected float dropRateIncreasePerLevel = .02f;
+    [SerializeField] protected float dropAmountIncreasePerLevel = .2f;
+
     [Header("Health")]
     [SerializeField] protected int health = 100;
 
@@ -50,7 +70,7 @@ public abstract class Enemy : MonoBehaviour
     [Space]
     [SerializeField] protected int damage = 10;
     [SerializeField] protected float attackRange = 1f;
-    [SerializeField] protected float attackSpeed = 1f;
+    [SerializeField] protected float attackTimeReduction = 0f;
 
     [Space]
     [SerializeField] protected bool isFrozen = false;
@@ -71,8 +91,8 @@ public abstract class Enemy : MonoBehaviour
     [Space]
     [SerializeField] protected bool isSpawningLoot;
     [SerializeField] protected float timeBetweenDropSpawns = .2f;
-    [SerializeField] protected float minSpawnRadius = 5f;
-    [SerializeField] protected float maxSpawnRadius = 20f;
+    [SerializeField] protected float minSpawnRadius = .5f;
+    [SerializeField] protected float maxSpawnRadius = 1f;
 
     [Space]
     [SerializeField] protected GameObject[] loot;
@@ -86,9 +106,10 @@ public abstract class Enemy : MonoBehaviour
 
     protected BoxCollider2D enemyCollider;
 
-    public float SpawnChance { get { return spawnChance * spawnChanceMultiplier; } set { spawnChance = value; } }
-    public float AttackRange { get { return attackRange; } }
-    public int Damage { get { return damage; } }
+    public float SpawnChance { get { return spawnChance * spawnChanceMultiplier + spawnChanceIncreasePerLevel * level; } set { spawnChance = value; } }
+    public float AttackRange { get { return attackRange + attackRangeIncreasePerLevel * level; } }
+    public int Damage { get { return Mathf.RoundToInt(damage + damageIncreasePerLevel * level); } }
+    public int Level { get { return level; } set { level = value; } }
 
     protected void Start()
     {
@@ -106,6 +127,8 @@ public abstract class Enemy : MonoBehaviour
 
         OnEnemyDeath += DropItems;
         OnEnemyDeath += () => StartCoroutine(WaitAndDestroyEnemy());
+
+        OnEnemyTakeDamage += () => SoundManager.PlayEnemyDamageSound();
     }
 
     protected void Update()
@@ -121,7 +144,7 @@ public abstract class Enemy : MonoBehaviour
 
     private void IsPlayerInRange()
     {
-        if (Vector3.Distance(player.transform.position, transform.position) <= attackRange)
+        if (Vector3.Distance(player.transform.position, transform.position) <= attackRange + attackRangeIncreasePerLevel * level)
         {
             playerInRange = true;
             isMoving = false;
@@ -134,7 +157,7 @@ public abstract class Enemy : MonoBehaviour
     private void CanAttack()
     {
         if (timeToNextAttack > 0f)
-            timeToNextAttack -= Time.deltaTime * attackSpeed;
+            timeToNextAttack -= Time.deltaTime;
         else
         {
             canAttack = true;
@@ -145,7 +168,7 @@ public abstract class Enemy : MonoBehaviour
     private void Move()
     {
         Vector3 dir = (player.transform.position - transform.position).normalized;
-        Vector3 step = moveSpeed * Time.deltaTime * dir / slowness;
+        Vector3 step = (moveSpeed + movementIncreasePerLevel * level) * Time.deltaTime * dir / slowness;
 
         if (step.magnitude == 0f) 
             isMoving = false;
@@ -169,11 +192,11 @@ public abstract class Enemy : MonoBehaviour
         }
     }
 
-    public void ApplyDamageOverTime(int damage, float duration, float damageIntervals)
+    public void ApplyDamageOverTime(int damage, float duration, float damageIntervals, WeaponName weaponName)
     {
         if (!canTakeDamage || !isAlive) return;
 
-        StartCoroutine(DamageOverTime(damage, duration, damageIntervals));
+        StartCoroutine(DamageOverTime(damage, duration, damageIntervals, weaponName));
     }
 
     public void ApplySlow(float value, float duration)
@@ -200,12 +223,18 @@ public abstract class Enemy : MonoBehaviour
         canMove = true;
     }
 
-    public IEnumerator DamageOverTime(int damage, float duration, float damageIntervals)
+    public IEnumerator DamageOverTime(int damage, float duration, float damageIntervals, WeaponName weaponName)
     {
         float startTime = Time.time;
         while (Time.time < startTime + duration)
         {
-            TakeDamage(damage);
+            TakeDamage(damage, weaponName);
+
+            Vector3 positionVector;
+            positionVector = new Vector3(transform.position.x + 9.8f, transform.position.y - 1.5f, transform.position.z);
+            DamagePopup.Create(positionVector, damage.ToString(), DamagePopupOwner.ENEMY_HIT);
+
+            SoundManager.PlayEnemyDamageSound();
             yield return new WaitForSeconds(damageIntervals);
         }
     }
@@ -222,6 +251,16 @@ public abstract class Enemy : MonoBehaviour
 
         if (slowness < 50)
             isFrozen = false;
+    }
+
+    public void ScaleEnemyWithGameTime(float currentTime)
+    {
+        level = Mathf.FloorToInt(currentTime / levelupInterval);
+        health = Mathf.RoundToInt(health + healthIncreasePerLevel * level);
+        for (int i = 0; i < amounts.Length; i++)
+            amounts[i] += Mathf.FloorToInt(dropAmountIncreasePerLevel * level);
+        for (int i = 0; i < chances.Length; i++)
+            chances[i] += Mathf.FloorToInt(dropRateIncreasePerLevel * level);
     }
 
     public void DropItems()
@@ -245,7 +284,7 @@ public abstract class Enemy : MonoBehaviour
             {
                 GameObject obj = Instantiate(dropToSpawn, transform.position, Quaternion.identity, isAutomaticallyPickable ? pickablesParent : interactablesParent);
 
-                if (obj.GetComponent<ExperienceBook>())
+                if (obj.GetComponent<ExperienceMineral>())
                     obj.transform.position = RandomizePosition(obj.transform.position);
 
                 yield return new WaitForSeconds(timeBetweenDropSpawns);
@@ -283,7 +322,18 @@ public abstract class Enemy : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public abstract void TakeDamage(int damage);
+    public void Die()
+    {
+        health = 0;
+        canTakeDamage = false;
+        canMove = false;
+        isAlive = false;
+
+        anim.SetTrigger(ENEMY_DEATH_TRIGGER);
+        OnEnemyDeath?.Invoke();
+    }
+
+    public abstract void TakeDamage(int damage, WeaponName weaponName);
     protected abstract void Attack();
     public abstract void DealDamage(bool isSpecial);
 }

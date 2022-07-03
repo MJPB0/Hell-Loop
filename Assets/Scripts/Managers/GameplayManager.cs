@@ -24,9 +24,14 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private GameObject playerObject;
     [SerializeField] private GameObject enemySpawnerObject;
 
-    [Space]
+    [Header("Enemy spawning")]
     [SerializeField] private float timeBetweenWaves;
     [SerializeField] private float timeBetweenChestEnemySpawns;
+
+    [Space]
+    [SerializeField] private float percentagePerIncrease = 1.5f;
+    [SerializeField] private float timeBetweenEnemiesAmountIncrease = 30f;
+    [SerializeField] private float timeToEnemiesAmountIncrease = 30f;
 
     [Space]
     [SerializeField] private bool canSpawnMiniBoss;
@@ -38,16 +43,64 @@ public class GameplayManager : MonoBehaviour
     [SerializeField] private List<int> bossSpawnTimestamps;
     public int BossesCount = 0;
 
+    [Header("Util spawning")]
+    [SerializeField] private float timeToUtilSpawn = 15f;
+    [SerializeField] private float timeBetweenUtilSpawns = 30f;
+
+    [Header("Trap spawning")]
+    [SerializeField] private float timeToTrapSpawn = 15f;
+    [SerializeField] private float timeBetweenTrapSpawns = 30f;
+
+    [Space]
+    [SerializeField] private bool reachedEnd = false;
+
+    [Header("Game stats")]
+    public int KnifeDamage = 0;
+    public int EvolvedKnifeDamage = 0;
+    public int SwordDamage = 0;
+    public int EvolvedSwordDamage = 0;
+    public int TomahawkDamage = 0;
+    public int EvolvedTomahawkDamage = 0;
+    public int AxeDamage = 0;
+    public int EvolvedAxeDamage = 0;
+    public int IceWandDamage = 0;
+    public int EvolvedIceWandDamage = 0;
+    public int FireWandDamage = 0;
+    public int EvolvedFireWandDamage = 0;
+    public int EarthWandDamage = 0;
+    public int EvolvedEarthWandDamage = 0;
+    public int WindWandDamage = 0;
+    public int EvolvedWindWandDamage = 0;
+
+    public int OverallDamage = 0;
+    public int DamageTaken = 0;
+    public int HealingDone = 0;
+
+    public int EnemiesKilled = 0;
+
+    public int ExperienceGained = 0;
+
+    public int LevelReached = 0;
+    public float TimeAlive = 0;
+
     private Player player;
 
     private EnemySpawner enemySpawner;
+    private UtilSpawner utilSpawner;
+    private TrapSpawner trapSpawner;
 
     public GameStages CurrentGameStage { get { return currentGameStage; } }
+
+    public float CurrentTime { get { return currentGameTime; } }
 
     public bool IsPaused { get { return isPaused; } }
     public bool HasEnded { get { return hasEnded; } }
     public float TimeBetweenWaves { get { return timeBetweenWaves; } }
     public float TimeBetweenChestEnemySpawns { get { return timeBetweenChestEnemySpawns;} }
+
+    public float CurrentGameTime { get { return currentGameTime; } }
+
+    public float CurrentBreakpoint { get { return gameStagesBreakpoints[(int)currentGameStage > 0 ? (int)currentGameStage - 1 : (int)currentGameStage]; } }
 
     private void Awake()
     {
@@ -55,6 +108,13 @@ public class GameplayManager : MonoBehaviour
             Destroy(gameObject);
         else
             Instance = this;
+
+        player = FindObjectOfType<Player>();
+        enemySpawner = FindObjectOfType<EnemySpawner>();
+        utilSpawner = FindObjectOfType<UtilSpawner>();
+        trapSpawner = FindObjectOfType<TrapSpawner>();
+
+        SoundManager.Initialize(player);
     }
 
     private void Start()
@@ -64,7 +124,7 @@ public class GameplayManager : MonoBehaviour
 
     private void Update()
     {
-        if (!isPaused && !hasEnded)
+        if (!isPaused && !hasEnded && !reachedEnd)
             CalculateStageTime();
     }
 
@@ -72,16 +132,19 @@ public class GameplayManager : MonoBehaviour
     {
         currentGameTime += Time.deltaTime;
 
-        if (timeToNextMiniBoss > 0) 
-            timeToNextMiniBoss -= Time.deltaTime;
-        else if (!canSpawnMiniBoss && MiniBossesCount == 0)
-        {
-            timeToNextMiniBoss = 0f;
-            canSpawnMiniBoss = true;
-        }
+        CalculateTimeToMiniBoss();
+        CalculateTimeToEnemiesAmountIncrease();
+        CalculateTimeToUtilSpawn();
+        CalculateTimeToTrapSpawn();
 
         if (currentGameTime >= gameStagesBreakpoints[(int)currentGameStage])
             AdvanceGameStage();
+
+        if (utilSpawner.CanSpawnUtil)
+            utilSpawner.SpawnUtil();
+
+        if (trapSpawner.CanSpawnTrap)
+            trapSpawner.SpawnTrap();
 
         int currentGameTimeInSeconds = Mathf.RoundToInt(currentGameTime);
 
@@ -102,8 +165,53 @@ public class GameplayManager : MonoBehaviour
         }
     }
 
+    private void CalculateTimeToTrapSpawn()
+    {
+        if (timeToTrapSpawn > 0)
+            timeToTrapSpawn -= Time.deltaTime;
+        else
+        {
+            timeToTrapSpawn = timeBetweenTrapSpawns;
+            trapSpawner.CanSpawnTrap = true;
+        }
+    }
+
+    private void CalculateTimeToUtilSpawn()
+    {
+        if (timeToUtilSpawn > 0)
+            timeToUtilSpawn -= Time.deltaTime;
+        else
+        {
+            timeToUtilSpawn = timeBetweenUtilSpawns;
+            utilSpawner.CanSpawnUtil = true;
+        }
+    }
+
+    private void CalculateTimeToEnemiesAmountIncrease()
+    {
+        if (timeToEnemiesAmountIncrease > 0)
+            timeToEnemiesAmountIncrease -= Time.deltaTime;
+        else
+        {
+            timeToEnemiesAmountIncrease = timeBetweenEnemiesAmountIncrease;
+            enemySpawner.BaseEnemiesPerWaveMultiplier += percentagePerIncrease;
+        }
+    }
+
+    private void CalculateTimeToMiniBoss()
+    {
+        if (timeToNextMiniBoss > 0)
+            timeToNextMiniBoss -= Time.deltaTime;
+        else if (!canSpawnMiniBoss && MiniBossesCount == 0)
+        {
+            timeToNextMiniBoss = 0f;
+            canSpawnMiniBoss = true;
+        }
+    }
+
     private void AdvanceGameStage()
     {
+        enemySpawner.BaseEnemiesPerWaveMultiplier = 1f;
         switch (currentGameStage)
         {
             case GameStages.EARLY:
@@ -113,9 +221,20 @@ public class GameplayManager : MonoBehaviour
                 currentGameStage++;
                 break;
             case GameStages.LATE:
-                WinGame();
+                SpawnTheEnemy();
                 break;
         }
+    }
+
+    private void SpawnTheEnemy()
+    {
+        player.IsStunned = true;
+        player.CanPickupExperience = false;
+        reachedEnd = true;
+
+        StopAllCoroutines();
+
+        enemySpawner.SpawnTheEnemy();
     }
 
     private void SpawnPlayer()
@@ -142,6 +261,76 @@ public class GameplayManager : MonoBehaviour
             Instantiate(enemySpawnerObject);
             enemySpawner = enemySpawnerToSpawn;
         }
+    }
+
+    public void CountDamageDealt(int value, WeaponName weaponType)
+    {
+        OverallDamage += value;
+        switch (weaponType)
+        {
+            case WeaponName.AXE:
+                AxeDamage += value;
+                break;
+            case WeaponName.KNIFE:
+                KnifeDamage += value;
+                break;
+            case WeaponName.SWORD:
+                SwordDamage += value;
+                break;
+            case WeaponName.FIRE_WAND:
+                FireWandDamage += value;
+                break;
+            case WeaponName.EARTH_WAND:
+                EarthWandDamage += value;
+                break;
+            case WeaponName.WIND_WAND:
+                WindWandDamage += value;
+                break;
+            case WeaponName.ICE_WAND:
+                IceWandDamage += value;
+                break;
+            case WeaponName.BATTLEAXE:
+                EvolvedAxeDamage += value;
+                break;
+            case WeaponName.BLOODY_KNIFE:
+                EvolvedKnifeDamage += value;
+                break;
+            case WeaponName.HOLY_SWORD:
+                EvolvedSwordDamage += value;
+                break;
+            case WeaponName.LASER_WAND:
+                EvolvedFireWandDamage += value;
+                break;
+            case WeaponName.COSMIC_WAND:
+                EvolvedEarthWandDamage += value;
+                break;
+            case WeaponName.THUNDER_WAND:
+                EvolvedWindWandDamage += value;
+                break;
+            case WeaponName.TIME_WAND:
+                EvolvedIceWandDamage += value;
+                break;
+        }
+    }
+
+    public void CountDamageTaken(int value)
+    {
+        DamageTaken += value;
+    } 
+
+    public void CountExperienceGained(int value)
+    {
+        ExperienceGained += value;
+    }
+
+    public void AddEnemyKilled()
+    {
+        EnemiesKilled++;
+    }
+
+    public void CountHealingDone(int value)
+    {
+        HealingDone += value;
     }
 
     public void StartGame()
@@ -181,13 +370,12 @@ public class GameplayManager : MonoBehaviour
         Time.timeScale = .2f;
         hasEnded = true;
         player.IsAlive = false;
-        OnGameEnd?.Invoke();
-    }
 
-    private void WinGame()
-    {
-        Time.timeScale = 0f;
-        hasEnded = true;
-        OnGameWin?.Invoke();
+        LevelReached = player.CurrentLvl;
+        if (currentGameTime >= 30)
+            DamageTaken -= 9999;
+        TimeAlive = Mathf.Round((currentGameTime / 60) * 100.0f) * 0.01f;
+
+        OnGameEnd?.Invoke();
     }
 }

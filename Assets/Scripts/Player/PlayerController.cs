@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
 
     public int IndexSelected { get; set; }
 
+    private PauseScreenDisplay pauseScreen;
+
     void Awake()
     {
         Controls = new PlayerActions();
@@ -56,15 +58,16 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (player.CanMove) 
+        if (player.CanMove && !player.IsStunned) 
             Move();
         else 
             animator.SetBool(IS_RUNNING, false);
 
+        if (player.IsStunned) return;
+
         if (player.TimeToNextDash > 0f) player.TimeToNextDash -= Time.deltaTime;
         else if (!player.CanDash)
         {
-            //Debug.Log("Dash ready!");
             player.CanDash = true;
             player.TimeToNextDash = 0f;
         }
@@ -95,10 +98,13 @@ public class PlayerController : MonoBehaviour
         else if (movementInput.x > 0f)
             FlipBody(true);
 
-        Vector2 newPos = player.MovementSpeed * Time.deltaTime * movementInput;
+        Vector2 newPos = player.MovementSpeed * Time.deltaTime * movementInput.normalized;
         newPos = PixelPerfectClamp(newPos);
+        if (Mathf.Abs(newPos.x) > 0 && Mathf.Abs(newPos.y) > 0)
+            newPos *= 2f;
 
         transform.Translate(new Vector3(newPos.x, newPos.y, 0));
+        player.OnPlayerMove?.Invoke();
     }
 
     private void Dash()
@@ -112,7 +118,6 @@ public class PlayerController : MonoBehaviour
         player.OnPlayerDash?.Invoke();
 
         StartCoroutine(PerformDash());
-        //Debug.Log("Dash performed!");
     }
 
     private void FlipBody(bool facingRight)
@@ -204,6 +209,8 @@ public class PlayerController : MonoBehaviour
 
         Controls.Gameplay.NextWeapon.performed += ctx => NextWeapon();
         Controls.Gameplay.PreviousWeapon.performed += ctx => PreviousWeapon();
+
+        Controls.Gameplay.Pause.performed += ctx => EscapeClicked();
     }
 
     private void PassiveSelectInputsSetup()
@@ -228,4 +235,12 @@ public class PlayerController : MonoBehaviour
     private void PreviousWeapon() => playerInventory.PreviousWeapon();
 
     public void DisableControls() => currentActions.Disable();
+
+    public void EscapeClicked()
+    {
+        if (!PauseScreenDisplay.IsPaused)
+            pauseScreen = PauseScreenDisplay.Create();
+        else if (pauseScreen)
+            pauseScreen.ResumeGame();
+    }
 }

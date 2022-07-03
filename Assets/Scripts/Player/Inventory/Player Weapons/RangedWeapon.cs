@@ -6,6 +6,7 @@ public class RangedWeapon : PlayerWeapon
     [Space]
     [Header("Ranged")]
     [SerializeField] private float projectileSpeed;
+    [SerializeField] private float additionalProjectileSpeed;
 
     [Space]
     [SerializeField] private GameObject projectile;
@@ -16,20 +17,20 @@ public class RangedWeapon : PlayerWeapon
 
     public int MaxEnemiesHit { get { return maxEnemiesHit; } set { maxEnemiesHit = value; } }
     public bool HasEnemyCap { get { return hasEnemyCap; } }
-    public float ProjectileSpeed { get { return projectileSpeed; } }
+    public float ProjectileSpeed { get { return projectileSpeed + additionalProjectileSpeed; } }
 
     public override void Use()
     {
         canAttack = false;
-        timeToNextAttack = timeBetweenAttacks;
+        timeToNextAttack = timeBetweenAttacks - AttackSpeed;
 
-        weaponWasUsed?.Invoke();
+        WeaponIsUsed?.Invoke();
     }
 
     public void UseEffects(Enemy enemy)
     {
-        primaryEffect.Use(currentLevel, player, enemy);
-        secondaryEffect.Use(currentLevel, player, enemy);
+        primaryEffect.Use(player, enemy, weaponName);
+        secondaryEffect.Use(player, enemy, weaponName);
     }
 
     private void ShootProjectile()
@@ -51,11 +52,36 @@ public class RangedWeapon : PlayerWeapon
 
     public override void SetCurrentlyUsed()
     {
-        weaponWasUsed += ShootProjectile;
+        WeaponIsUsed += ShootProjectile;
     }
 
     public override void SetNotCurrentlyUsed()
     {
-        weaponWasUsed -= ShootProjectile;
+        WeaponIsUsed -= ShootProjectile;
+    }
+
+    protected override void ApplyUpgrades()
+    {
+        WeaponLevelUpgradeSO upgrade = levelUpgrades[currentLevel - 2];
+        switch (upgrade.StatType)
+        {
+            case WeaponStatType.ATTACK_RANGE:
+                additionalAttackRange += upgrade.Value;
+                break;
+            case WeaponStatType.ATTACK_SPEED:
+                additionalAttackSpeed += upgrade.Value;
+                break;
+            case WeaponStatType.PROJECTILE_SPEED:
+                additionalProjectileSpeed += upgrade.Value;
+                break;
+            case WeaponStatType.ENEMY_HIT_CAP:
+                maxEnemiesHit += Mathf.RoundToInt(upgrade.Value);
+                break;
+        }
+
+        if (upgrade.PrimaryEffectUpgrade != null)
+            primaryEffect = upgrade.PrimaryEffectUpgrade;
+        if (upgrade.SecondaryEffectUpgrade != null)
+            secondaryEffect = upgrade.SecondaryEffectUpgrade;
     }
 }

@@ -48,31 +48,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IsInteractable: 0
   AutomaticInteraction: 0
-  weaponName: 19
+  weaponName: 17
   passiveNeededToEvolve: 1
   isEvolved: 1
   evolvedWeapon: {fileID: 0}
   currentLevel: 1
-  maxLevel: 3
+  maxLevel: 5
+  levelUpgrades:
+  - {fileID: 11400000, guid: e0c548bdbba38544b88b3096e5c606d6, type: 2}
+  - {fileID: 11400000, guid: b760d8a00e5d42f4ba6a68fc261744f9, type: 2}
+  - {fileID: 11400000, guid: a59305b0349106748b7fae5daafcdde8, type: 2}
+  - {fileID: 11400000, guid: ec55e412524b7d64ea85c5045ea9f75c, type: 2}
   canAttack: 1
   timeToNextAttack: 0
   timeBetweenAttacks: 5
   attackSpeed: 1
-  attackRange: 20
-  criticalChance: 0.6
+  additionalAttackSpeed: 0
+  attackRange: 10
+  additionalAttackRange: 0
   primaryEffect: {fileID: 11400000, guid: d5bbe9276e4d97145a2b284205679bce, type: 2}
-  secondaryEffect: {fileID: 11400000, guid: 08c0d7f900d68414c859a9660b6f5f67, type: 2}
-  sprite: {fileID: 0}
+  secondaryEffect: {fileID: 11400000, guid: 551bac816a5566a43bef43897787559f, type: 2}
+  sprite: {fileID: 21300000, guid: 5781cdb828d7def4bafa8a1040320d3e, type: 3}
   enemiesInRange: []
   pickupCollider: {fileID: 0}
   rangeCollider: {fileID: 0}
   projectilesParent: {fileID: 0}
   onHitEffect: {fileID: 6296088671815526773, guid: 65ca5e2ae2391744f9d35cbb20d720b4, type: 3}
   onHitEffectAnimation: {fileID: 7400000, guid: 9827c316b8d99ef40b539da43cdb0991, type: 2}
-  projectileSpeed: 10
+  projectileSpeed: 6
+  additionalProjectileSpeed: 0
   projectile: {fileID: 4393593283564393206, guid: 227ad70fac10f65449ac63df0406061f, type: 3}
-  hasEnemyCap: 0
-  maxEnemiesHit: 0
+  hasEnemyCap: 1
+  maxEnemiesHit: 8
 --- !u!58 &4075207720291311307
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -163,11 +170,11 @@ SpriteRenderer:
   m_SortingLayer: -1
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
-  m_Color: {r: 0, g: 1, b: 0.23965812, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.48, y: 1.76}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0

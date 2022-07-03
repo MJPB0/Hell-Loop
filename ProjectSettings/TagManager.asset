@@ -17,9 +17,12 @@ TagManager:
   - Player Static Effects
   - Player Weapons Parent
   - Player Passives Parent
+  - Damage Numbers Parent
   - Enemy Projectiles Parent
   - Map Parent
   - Map Chunk
+  - Utils Parent
+  - Traps Parent
   layers:
   - Default
   - TransparentFX

@@ -44,8 +44,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697deb9d40acb574cb94b016778c0b21, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  passiveName: 8
+  passiveName: 7
+  passiveDescription: increase pickup range by
   multiplierType: 11
-  currentLevel: 1
-  maxLevel: 5
-  inceasePerLevel: 0.1
+  baseValue: 0.05
+  additionalValue: 0
+  currentLevel: 0
+  maxLevel: 3
+  levelUpgrades:
+  - 0.05
+  - 0.1
+  sprite: {fileID: 129344880, guid: 1c0433901156cbf47954ab5ac9a4d591, type: 3}

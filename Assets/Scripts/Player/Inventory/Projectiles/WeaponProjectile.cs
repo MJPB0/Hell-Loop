@@ -38,10 +38,21 @@ public class WeaponProjectile : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
-            EnemyHit(collision.gameObject.GetComponent<Enemy>());
-        else if (collision.CompareTag("Obstacle"))
-            Bounce();
+        if (!collision.CompareTag("Enemy")) return;
+
+        collision.gameObject.TryGetComponent(out Enemy enemy);
+        if (enemy)
+        {
+            EnemyHit(enemy);
+            return;
+        }
+
+        collision.gameObject.TryGetComponent(out EnemyProjectile enemyProjectile);
+        if (enemyProjectile)
+        {
+            Destroy(enemyProjectile.gameObject);
+            IncreaseHitCount();
+        }
     }
 
     private void MoveProjectile()
@@ -58,10 +69,15 @@ public class WeaponProjectile : MonoBehaviour
 
         playerWeapon.UseEffects(enemy);
 
-        enemiesHit++;
-
         if (playerWeapon.OnHitEffect != null)
             enemy.EnemyEffectsController.SpawnEffect(playerWeapon.OnHitEffect, enemy.transform.position, playerWeapon.OnHitEffectAnimation.length);
+
+        IncreaseHitCount();
+    }
+
+    private void IncreaseHitCount()
+    {
+        enemiesHit++;
 
         if (playerWeapon.MaxEnemiesHit == enemiesHit && playerWeapon.HasEnemyCap)
         {

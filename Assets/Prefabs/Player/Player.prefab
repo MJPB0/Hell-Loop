@@ -141,9 +141,14 @@ MonoBehaviour:
   levelup: {fileID: 1595404419929738325, guid: 7325ff22852306e4a9cc0f7b3b8e4664, type: 3}
   bleed: {fileID: 3096270285392304928, guid: 35a21857532dcd944afe04381df4cac0, type: 3}
   dash: {fileID: 799043127306923886, guid: 7a9ab934cfdb9c042a2cafa52ee07708, type: 3}
+  doubleAttack: {fileID: 5886982963040898027, guid: fcf06f3d99ec40d4f890f6c9d56a5519, type: 3}
+  holyStrike: {fileID: 8365465004816423712, guid: 69ae59ac666872041a3cc21374a5ae1e, type: 3}
   levelupClip: {fileID: 7400000, guid: c7e9e266c2f71e7488b112987899ff34, type: 2}
   bleedClip: {fileID: 7400000, guid: 8ea2ed3d0b6dc2e458270af45973c3e4, type: 2}
   dashClip: {fileID: 7400000, guid: 650f215efaf4b7d40b9238ebdbab35a5, type: 2}
+  doubleAttackClip: {fileID: 7400000, guid: 4a9590f7315bbc044a141cc0be3514ec, type: 2}
+  holyStrikeClip: {fileID: 7400000, guid: 04dd05f1ece458e4b9411d51783f6d78, type: 2}
+  currentMeleeWeapon: {fileID: 0}
 --- !u!1 &4416430153279312057
 GameObject:
   m_ObjectHideFlags: 0
@@ -377,58 +382,38 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseHealth: 100
   currentHealth: 100
+  healthRestoreOnLevelUp: 15
+  healthIncreasePerLevelUp: 5
   baseHealthMultiplier: 1
   healthMultiplier: 0
   temporaryArmor: 0
-  baseAttackSpeedMultiplier: 1
   attackSpeedMultiplier: 0
-  baseCriticalChance: 0.1
-  baseCriticalChanceMultiplier: 1
+  CanDoubleAttack: 0
+  doubleAttackChance: 0
+  attackRangeMultiplier: 0
+  baseCriticalChance: 0.15
   criticalChanceMultiplier: 0
   baseCriticalDamage: 2
-  baseCriticalDamageMultiplier: 1
-  criticalDamageMultiplier: 1
-  baseEffectDurationMultiplier: 1
+  criticalDamageMultiplier: 0
   effectDurationMultiplier: 0
-  baseEffectPowerMultiplier: 1
-  effectPowerMultiplier: 1
-  baseBulletSpeedMultiplier: 1
+  effectPowerMultiplier: 0
   bulletSpeedMultiplier: 0
-  baseAttackRangeMultiplier: 1
-  attackRangeMultiplier: 0
-  baseMovementSpeed: 5
-  baseMovementSpeedMultiplier: 1
-  movementSpeedMultiplier: 0
+  baseMovementSpeed: 3
   DashStrength: 15
   DashDuration: 0.3
   DashDaze: 0.15
   TimeToNextDash: 0
-  baseDashCooldown: 2
-  baseDashCooldownMultiplier: 1
+  baseDashCooldown: 5
   dashCooldownMultiplier: 0
-  knifeMastery: 1
-  swordMasteryLevel: 1
-  tomahawkMasteryLevel: 1
-  axeMasteryLevel: 1
-  iceWandMasteryLevel: 1
-  fireWandMasteryLevel: 1
-  airWandMasteryLevel: 1
-  earthWandMasteryLevel: 1
-  pistolMasteryLevel: 1
-  shotgunMasteryLevel: 1
-  rifleMasteryLevel: 1
-  sniperMasteryLevel: 1
   baseLuck: 0.1
   luckMultiplier: 1
-  basePickupRange: 1
-  basePickupRangeMultiplier: 1
-  pickupRangeMultiplier: 1
-  baseExperienceGainMultiplier: 1
+  basePickupRange: 2
+  pickupRangeMultiplier: 0
+  baseExperienceIncrease: 100
   experienceGainMultiplier: 0
   currentExperience: 0
   experienceToNextLevel: 100
   currentLevel: 1
-  baseGoldGainMultiplier: 1
   goldGainMultiplier: 0
   acquiredGold: 0
   IsAlive: 1
@@ -495,7 +480,7 @@ Transform:
   m_GameObject: {fileID: 4416430153555709860}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4416430153279312056}

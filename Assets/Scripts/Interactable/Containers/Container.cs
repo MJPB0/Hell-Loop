@@ -41,6 +41,7 @@ public abstract class Container : InteractableObject
         if (!IsInteractable) return;
 
         anim.SetTrigger(CONTAINER_OPEN);
+        SoundManager.PlayChestOpenSound();
     }
 
     public void SetController(int index)

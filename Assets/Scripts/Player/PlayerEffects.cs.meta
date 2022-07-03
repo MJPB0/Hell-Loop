@@ -3,7 +3,13 @@ guid: c96212aa1f48c3a4a8c459cf03811536
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - levelup: {instanceID: 0}
+  - bleed: {instanceID: 0}
+  - dash: {instanceID: 0}
+  - levelupClip: {instanceID: 0}
+  - bleedClip: {instanceID: 0}
+  - dashClip: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
