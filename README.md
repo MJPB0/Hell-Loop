@@ -1,5 +1,7 @@
 # Hell-Loop
-2D roguelike game currently in development.
+2D roguelike game.
+
+**[DEVELOPMENT PAUSED]**
 
 # Team
 Core systems, Oversight, Design - [@MJPB0](https://github.com/MJPB0)
